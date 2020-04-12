@@ -18,99 +18,48 @@ https://s.mail.ru/gjKa/eWQ9eqrXM
 */
 
 
-var saveButton = createButton( 'Save and Close', ( event ) => {
-    toast.hide();
-} );
-
-var showParentButton = createButton( 'Show parent text', ( event ) => {
-    toast.context( engSelection.getParentContext() );
-} );
-
-var showPrevButton = createButton( 'Show parent text', ( event ) => {
-    toast.context( engSelection.getParentContext() );
-} );
-
-var toast = createToast( showParentButton, showPrevButton, saveButton );
-
-var engSelection;
-var parentEngElement;
+let engSelection;
 
 window.engDebug = true;
 
-var log = ( ...args ) => {
-    if ( !window.engDebug ) {
-        return;
-    }
-    console.log( ...args )
-};
+const saveButton = createButton( 'Save and Close', ( event ) => {
+    const word = engSelection.getSelectionObject().word;
 
-var log2 = (funcName, object, ...args) => {
-    if ( !window.engDebug ) {
-        return;
+    const wordObj = engSelection.getSelectionObject();
+
+    if (!saver.hasWord(word)) {
+        list.addItem(word);
     }
-    console.group(funcName);
-    console.table(object);
-    if ( args?.length ) {
-        console.log(...args);
-    }
-    console.groupEnd();
+
+    saver.addWord( wordObj.word, {
+        context: wordObj.context,
+        url: wordObj.url,
+        selector: wordObj.selector
+    } );
+
+    toast.hide();
+} );
+
+const showParentButton = createButton( 'Show parent text', ( event ) => {
+    toast.context( engSelection.getParentContext() );
+} );
+
+const showPrevButton = createButton( 'Show parent text', ( event ) => {
+    toast.context( engSelection.getParentContext() );
+} );
+
+const toast = createToast( showParentButton, showPrevButton, saveButton );
+
+const saver = new DataSaver();
+const list = new DomList();
+
+if (saver.getWords().size) {
+    saver.getWords().forEach((item) => {
+        list.addItem(item.word);
+    });
 }
 
-var assert = ( ...args ) => {
-    if ( !window.angTest ) {
-        return;
-    }
-    console.assert( ...args );
-}
-
-class DataSaver {
-    cache = new Map();
-
-    addWord( word, { context, offset, url, selector }, isLoaded = false ) {
-        let data = this.getWord( word );
-
-        if ( !data ) {
-            data = {
-                word,
-                contexts: [],
-                isLoaded
-            }
-        }
-
-        data.contexts.push( {
-            context,
-            offset,
-            url,
-            selector,
-        } )
-
-        this._setWord( word, data );
-    }
-
-    updateWordStatus( word, isLoaded ) {
-        const data = this.getWord( word );
-
-        data.isLoaded = isLoaded;
-
-        this._setWord( word, data );
-    }
-
-    getWords() {
-        return this.cache;
-    }
-
-    getWord( word ) {
-        return this.cache.get( word );
-    }
-
-    _setWord( word, data ) {
-        this.cache.set( word, data );
-
-        log2( 'SetWord', this.cache );
-    }
-}
-
-var saver = new DataSaver();
+let myTimeout;
 
 document.addEventListener( 'DOMNodeInserted', ( event ) => {
     const id = event.target.id;
@@ -126,7 +75,6 @@ document.addEventListener( 'DOMNodeInserted', ( event ) => {
     }
 } );
 
-var myTimeout;
 
 document.addEventListener( 'selectionchange', ( event ) => {
     const cls = window.getSelection().focusNode?.className;
@@ -149,13 +97,12 @@ document.addEventListener( 'selectionchange', ( event ) => {
     myTimeout = setTimeout( () => {
         engSelection = new SelectionContext( selection );
         const sentence = engSelection.getSentence();
-        const word = engSelection.getSelectionObject();
+        const word = engSelection.getSelectionObject().word;
 
-        saver.addWord( word.word, {
-            context: word.context,
-            url: word.url,
-            selector: word.selector
-        } );
+        if ( saver.hasWord( word ) ) {
+            list.highlightItem( word );
+        }
+        
         toast.context( sentence );
         toast.show();
     }, 1000 );
@@ -171,47 +118,3 @@ document.addEventListener( 'selectionchange', ( event ) => {
 
 //     return saver;
 // }
-
-
-function createToast( showParentButton, showPrevButton, saveButton ) {
-    var div = document.createElement( 'div' );
-
-    div.setAttribute( 'style', `
-        position: fixed;
-        z-index: 1202;
-        bottom: 10px;
-        right: 10px;
-        background: #fff;
-        box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px;
-        border: 1px solid rgb(187, 187, 187);
-        display: none;
-        padding: 5px;
-        font-size: 12px;
-        max-width: 300px;
-    `);
-
-    var divContext = document.createElement( 'div' );
-
-    div.appendChild( divContext );
-    div.appendChild( showParentButton );
-    //     div.appendChild(showPrevButton);
-    div.appendChild( saveButton );
-
-    document.body.appendChild( div );
-
-    return {
-        context: ( text ) => { divContext.innerText = text },
-        show: () => { div.style.display = 'block' },
-        hide: () => { div.style.display = 'none' }
-    };
-}
-
-function createButton( name, callBack ) {
-    var button = document.createElement( 'button' );
-    button.textContent = name;
-    button.setAttribute( 'type', 'button' );
-
-    button.addEventListener( 'click', callBack );
-
-    return button;
-}

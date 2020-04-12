@@ -1,0 +1,5 @@
+plan
+
+1. save and output
+2. save to localstorage
+3. show saved on load by url
