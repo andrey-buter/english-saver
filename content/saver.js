@@ -1,77 +1,77 @@
 class DataSaver {
-	constructor() {
-		this.cache = this._loadCache();
+	constructor(localDb, remoteDb) {
+		this.localDb = localDb;
+		this.remoteDb = remoteDb;
+
+		remoteDb.init()
+			.then((remoteData) => {
+				this.localDb.saveInitData(remoteData);
+
+				return remoteData;
+			});
 	}
 
-	addWord( word, { context, offset, url, selector }, isLoaded = false ) {
-		let data = this.getWord( word );
+	onLoad() {
 
-		if ( !data ) {
-			data = {
-				word,
-				contexts: [],
-				isLoaded
+	}
+
+	findRemoteAndLocalDiffs(localData, remoteData) {
+		const remoteValues = getObjectValues(remoteData);
+		const localValues = getObjectValues(localData);
+
+		const remoteDiff = [...remoteValues];
+		const localDiff = localValues.filter((local) => {
+			const key = remoteDiff.indexOf(local);
+
+			if (-1 === key) {
+				return true;
 			}
-		}
 
-		data.contexts.push( {
-			context,
-			offset,
-			url,
-			selector,
-		} )
+			remoteDiff.splice(key, 1);
+			
+			return false;
+		});
 
-		this._setWord( word, data );
-	}
-
-	updateWordStatus( word, isLoaded ) {
-		const data = this.getWord( word );
-
-		data.isLoaded = isLoaded;
-
-		this._setWord( word, data );
+		return {remoteDiff, localDiff};
 	}
 
 	hasWord(word) {
-		return this.cache.has(word);
+		return this.localDb.hasWord(word);
+	}
+
+	async addItem({
+		originWord,
+		wordInContext,
+		translation,
+		context,
+		contextOffset,
+		contextSelector,
+		uri
+	}) {
+		const word = await this.remoteDb.addItem({
+			originWord,
+			wordInContext,
+			translation,
+			context,
+			contextOffset,
+			contextSelector,
+			uri
+		});
+
+		this.localDb.addItem(word.key, {
+			originWord,
+			wordInContext,
+			translation,
+			context,
+			contextOffset,
+			contextSelector,
+			uri
+		});
 	}
 
 	getWords() {
-		return this.cache;
-	}
+		const data = this.localDb._getData();
 
-	getWord( word ) {
-		return this.cache.get( word );
-	}
-
-	_setWord( word, data ) {
-		this.cache.set( word, data );
-		this._saveStorage();
-
-		log2( 'SetWord', this.cache );
-	}
-
-	_saveStorage() {
-		const object = Object.fromEntries(this.cache.entries());
-
-		localStorage.setItem('english:words', JSON.stringify(object));
-	}
-
-	_loadCache() {
-		const data = JSON.parse(localStorage.getItem('english:words'));
-
-		if (!data) {
-			return new Map();
-		}
-
-		let array = [];
-
-		for (const key in data) {
-			if (data.hasOwnProperty(key)) {
-				array.push([key, data[key]]);
-			}
-		}
-
-		return new Map(array);
+		return getObjectValues(data);
 	}
 }

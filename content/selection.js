@@ -497,7 +497,9 @@ class SelectionContext {
 			word: this.selection,
 			url: this.url,
 			selector: '',
-			context: this.__getLastContext()
+			context: this.__getLastContext(),
+			offset: null,
+			translation: null
 		}
 	}
 

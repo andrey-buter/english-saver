@@ -20,7 +20,29 @@ https://s.mail.ru/gjKa/eWQ9eqrXM
 
 let engSelection;
 
-window.engDebug = true;
+window.engDebug = false;
+
+const remoteDb = new FireBase();
+const localDb = new LocalDb();
+const saver = new DataSaver(localDb, remoteDb);
+
+const list = new DomList();
+
+if (saver.getWords().length) {
+    saver.getWords().forEach((item) => {
+        list.addItem(item.wordInContext);
+    });
+}
+
+let myTimeout;
+
+const showParentButton = createButton( 'Show parent text', ( event ) => {
+    toast.context( engSelection.getParentContext() );
+} );
+
+const showPrevButton = createButton( 'Show parent text', ( event ) => {
+    toast.context( engSelection.getParentContext() );
+} );
 
 const saveButton = createButton( 'Save and Close', ( event ) => {
     const word = engSelection.getSelectionObject().word;
@@ -31,35 +53,20 @@ const saveButton = createButton( 'Save and Close', ( event ) => {
         list.addItem(word);
     }
 
-    saver.addWord( wordObj.word, {
+    saver.addItem({
+        originWord: null,
+        wordInContext: wordObj.word,
+        translation: wordObj.translation,
         context: wordObj.context,
-        url: wordObj.url,
-        selector: wordObj.selector
-    } );
+        contextOffset: wordObj.offset,
+        contextSelector: wordObj.selector,
+        uri: wordObj.url 
+    });
 
     toast.hide();
 } );
 
-const showParentButton = createButton( 'Show parent text', ( event ) => {
-    toast.context( engSelection.getParentContext() );
-} );
-
-const showPrevButton = createButton( 'Show parent text', ( event ) => {
-    toast.context( engSelection.getParentContext() );
-} );
-
-const toast = createToast( showParentButton, showPrevButton, saveButton );
-
-const saver = new DataSaver();
-const list = new DomList();
-
-if (saver.getWords().size) {
-    saver.getWords().forEach((item) => {
-        list.addItem(item.word);
-    });
-}
-
-let myTimeout;
+const toast = createToast(showParentButton, showPrevButton, saveButton);
 
 document.addEventListener( 'DOMNodeInserted', ( event ) => {
     const id = event.target.id;
