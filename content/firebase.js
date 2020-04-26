@@ -56,7 +56,7 @@ class FireBase {
 	
 				this.user = user;
 	
-				const data = await db.loadAll();
+				const data = await this.loadAll();
 
 				resolve(data);
 	
@@ -140,7 +140,8 @@ class FireBase {
 
 	async loadAll() {
 		try {
-			const data = await firebase.database().ref('words').once('value')
+			// const data = await firebase.database().ref('words').once('value')
+			const data = await firebase.database().ref('words').orderByChild('uri').equalTo()
 			return data.val()
 		} catch (error) {
 			throw error;

@@ -2,17 +2,15 @@ class DataSaver {
 	constructor(localDb, remoteDb) {
 		this.localDb = localDb;
 		this.remoteDb = remoteDb;
+	}
 
-		remoteDb.init()
+	init() {
+		return remoteDb.init()
 			.then((remoteData) => {
 				this.localDb.saveInitData(remoteData);
 
 				return remoteData;
 			});
-	}
-
-	onLoad() {
-
 	}
 
 	findRemoteAndLocalDiffs(localData, remoteData) {

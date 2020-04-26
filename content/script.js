@@ -28,11 +28,15 @@ const saver = new DataSaver(localDb, remoteDb);
 
 const list = new DomList();
 
-if (saver.getWords().length) {
-    saver.getWords().forEach((item) => {
-        list.addItem(item.wordInContext);
+saver.init()
+    .then((words) => {
+        if (saver.getWords().length) {
+            saver.getWords().forEach((item) => {
+                list.addItem(item.wordInContext);
+            });
+        }
     });
-}
+
 
 let myTimeout;
 
