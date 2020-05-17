@@ -20,7 +20,7 @@ https://s.mail.ru/gjKa/eWQ9eqrXM
 
 let engSelection;
 
-window.engDebug = false;
+window.engDebug = true;
 
 const remoteDb = new FireBase();
 const localDb = new LocalDb();
