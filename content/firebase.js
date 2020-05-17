@@ -58,6 +58,8 @@ class FireBase {
 	
 				const data = await this.loadAll();
 
+				debugger
+
 				resolve(data);
 	
 				// await this.load(); // https://youtu.be/DlXSA3_lSX4?t=3478
@@ -140,16 +142,28 @@ class FireBase {
 
 	async loadAll() {
 		try {
-			// const data = await firebase.database().ref('words').once('value')
-			const data = await firebase.database()
-				.ref('words')
-				.orderByChild('uri')
-				.equalTo(window.location.href)
-				.once('value', function (dataSnapshot) {
-					debugger
-				});
-			debugger
-			return data.val()
+			let data = await firebase.database().ref('words').once('value');
+			data = data.val();
+
+			return new Promise(async (resolve) => {
+				await firebase.database()
+					.ref('words')
+					.orderByChild('uri')
+					.equalTo(window.location.href)
+					.once('value', function (dataSnapshot) {
+						resolve(dataSnapshot.val());
+					});
+			});
+
+			// let data2 = await firebase.database()
+			// 	.ref('words')
+			// 	.orderByChild('uri')
+			// 	.equalTo(window.location.href)
+			// 	.once('value', function (dataSnapshot) {
+			// 		dataSnapshot.val()
+			// 	});
+			// debugger
+			// return data.val()
 		} catch (error) {
 			throw error;
 		}
