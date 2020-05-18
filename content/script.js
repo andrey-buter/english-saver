@@ -19,7 +19,7 @@ https://s.mail.ru/gjKa/eWQ9eqrXM
 
 
 let engSelection;
-let highlighter;
+const highlighter = new TextHighlighter(document.body);
 
 window.engDebug = true;
 
@@ -28,6 +28,7 @@ const localDb = new LocalDb();
 const saver = new DataSaver(localDb, remoteDb);
 
 const list = new DomList();
+
 
 
 saver.init()
