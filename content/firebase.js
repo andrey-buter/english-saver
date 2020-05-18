@@ -58,7 +58,7 @@ class FireBase {
 	
 				const data = await this.loadAll();
 
-				debugger
+				// debugger
 
 				resolve(data);
 	

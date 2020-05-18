@@ -19,6 +19,7 @@ https://s.mail.ru/gjKa/eWQ9eqrXM
 
 
 let engSelection;
+let highlighter;
 
 window.engDebug = true;
 
@@ -27,6 +28,7 @@ const localDb = new LocalDb();
 const saver = new DataSaver(localDb, remoteDb);
 
 const list = new DomList();
+
 
 saver.init()
     .then((words) => {
@@ -55,6 +57,8 @@ const saveButton = createButton( 'Save and Close', ( event ) => {
 
     if (!saver.hasWord(word)) {
         list.addItem(word);
+    } else {
+        highlighter.highlight();
     }
 
     saver.addItem({
@@ -106,26 +110,23 @@ document.addEventListener( 'selectionchange', ( event ) => {
     const selection = window.getSelection();
 
     myTimeout = setTimeout( () => {
-        engSelection = new SelectionContext( selection );
-        const sentence = engSelection.getSentence();
-        const word = engSelection.getSelectionObject().word;
-
-        if ( saver.hasWord( word ) ) {
-            list.highlightItem( word );
-        }
-        
-        toast.context( sentence );
-        toast.show();
+        handleSelection(selection);
     }, 1000 );
 } );
 
-// function proxySaver(saver) {
-//     saver.addWord = new Proxy(saver.addWord, {
-//         apply(target, thisArg, args) {
+function handleSelection(selection) {
+    engSelection = new SelectionContext( selection );
+    highlighter = new Highlighter( selection );
 
-//             target.apply(thisArg, args);
-//         }
-//     });
+    highlighter.highlight();
+    
+    const sentence = engSelection.getSentence();
+    const word = engSelection.getSelectionObject().word;
 
-//     return saver;
-// }
+    if ( saver.hasWord( word ) ) {
+        list.highlightItem( word );
+    }
+    
+    toast.context( sentence );
+    toast.show();
+}

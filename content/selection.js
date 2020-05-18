@@ -41,7 +41,7 @@ class SelectionContext {
 		this.selectionEndsOffset = selection.focusOffset; //* end of selection
 		this.selectionBeginsNode = selection.anchorNode;
 		this.selectionEndsNode = selection.focusNode;
-		this.selection = this._formatSelection( selection.toString() );
+		this.selection = this._formatRawSelection( selection.toString() );
 		this.expandedSelection = this.selection;
 		this.url = selection.baseNode.baseURI;
 
@@ -54,7 +54,7 @@ class SelectionContext {
 
 	//* if selection = 'panel. ' - format it
 	//* if 'panel. Something' - return input value
-	_formatSelection( word ) {
+	_formatRawSelection( word ) {
 		let selection = this.__formatText( word );
 		const regExp = new RegExp( this.punctuationMarksRegExp + '$', 'g' );
 
