@@ -1,3 +1,4 @@
+// @link {https://firebase.google.com/docs/reference/js/firebase.database}
 class FireBase {
 	user;
 	onAuthCallBack;
