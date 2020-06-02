@@ -59,8 +59,9 @@ const saveButton = createButton( 'Save and Close', ( event ) => {
     if (!saver.hasWord(word)) {
         list.addItem(word);
     } else {
-        highlighter.highlight();
+        highlighter.doHighlight();
     }
+
 
     saver.addItem({
         originWord: null,
@@ -117,9 +118,9 @@ document.addEventListener( 'selectionchange', ( event ) => {
 
 function handleSelection(selection) {
     engSelection = new SelectionContext( selection );
-    highlighter = new Highlighter( selection );
+    // highlighter = new Highlighter( selection );
 
-    highlighter.highlight();
+    // highlighter.doHighlight();
     
     const sentence = engSelection.getSentence();
     const word = engSelection.getSelectionObject().word;

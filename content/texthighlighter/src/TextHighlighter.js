@@ -436,7 +436,7 @@
         });
 
         dom(this.el).addClass(this.options.contextClass);
-        bindEvents(this.el, this);
+        // bindEvents(this.el, this);
     }
 
     /**
