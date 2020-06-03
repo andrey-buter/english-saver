@@ -1,10 +1,12 @@
 import './style.scss';
 
-// import './app/index';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app/components/App';
+import App from './app/App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
-
+document.addEventListener("DOMContentLoaded", () => {
+	const div = document.createElement('div');
+	div.id = 'root';
+	document.body.appendChild(div);
+	ReactDOM.render(<App />, div);
+});
