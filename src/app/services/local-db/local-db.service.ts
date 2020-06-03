@@ -1,71 +1,52 @@
-class LocalDb {
-	storageKey = 'english:words';
+import { WordsDatabase } from "../../models/words-database.model";
+import { Word } from "../../models/word.model";
 
-	savedWords = [];
-
-	constructor() {
-	}
+export class LocalDatabaseService {
+	#storageKey = 'english:words';
+	#savedWords: string[] = [];
 
 	getInitData() {
-		const data = this._getData();
+		const data = this.getData();
 
-		getObjectValues(data).forEach((word) => {
-			this.savedWords.push(word.wordInContext);
+		Object.values(data).forEach((word) => {
+			this.#savedWords.push(word.wordInContext);
 		});
 
 		return data;
 	}
 
-	saveInitData(data) {
-		getObjectValues(data).forEach((word) => {
-			if (this.savedWords.includes(word.wordInContext)) {
+	saveInitData(data: WordsDatabase) {
+		Object.values(data).forEach((word) => {
+			if (this.#savedWords.includes(word.wordInContext)) {
 				return;
 			}
 
-			this.savedWords.push(word.wordInContext);
+			this.#savedWords.push(word.wordInContext);
 		});
 
-		this._saveData(data);
+		this.saveData(data);
 	}
 
-	addItem(id, {
-		originWord,
-		wordInContext,
-		translation,
-		context,
-		contextOffset,
-		contextSelector,
-		uri
-	}) {
-		const data = this._getData();
+	public addItem(id: string, word: Word) {
+		const data = this.getData();
 
-		data[id] = {
-			originWord,
-			wordInContext,
-			translation,
-			context,
-			contextOffset,
-			contextSelector,
-			uri
-		};
+		data[id] = word;
 
-		this.savedWords.push(data[id]);
+		this.#savedWords.push(word.wordInContext);
 
-		this._saveData(data);
+		this.saveData(data);
 	}
 
-	_saveData(data) {
-		localStorage.setItem(this.storageKey, JSON.stringify(data));
+	private saveData(data: WordsDatabase) {
+		localStorage.setItem(this.#storageKey, JSON.stringify(data));
 	}
 
-	_getData() {
-		const data = JSON.parse(localStorage.getItem(this.storageKey));
-
-		return data || {};
+	public getData(): WordsDatabase {
+		return JSON.parse(localStorage.getItem(this.#storageKey) ?? '{}');
 	}
 
-	hasWord(word) {
-		return this.savedWords.includes(word);
+	public hasWord(word: string) {
+		return this.#savedWords.includes(word);
 	}
 
 	// addWord(word, {context, offset, url, selector}, isLoaded = false) {

@@ -32,11 +32,11 @@ class FireBase {
 			return user.user.uid;
 		} catch (error) {
 			console.log(error);
-			
+
 			return error;
 		}
 	}
-	
+
 	async signInUser(email, password) {
 		try {
 			const user = await firebase.auth().signInWithEmailAndPassword(email, password)
@@ -54,15 +54,15 @@ class FireBase {
 					return;
 				}
 				// user is logged in https://youtu.be/DlXSA3_lSX4?t=2366
-	
+
 				this.user = user;
-	
+
 				const data = await this.loadAll();
 
 				// debugger
 
 				resolve(data);
-	
+
 				// await this.load(); // https://youtu.be/DlXSA3_lSX4?t=3478
 			})
 		})
@@ -152,6 +152,7 @@ class FireBase {
 					.orderByChild('uri')
 					.equalTo(window.location.href)
 					.once('value', function (dataSnapshot) {
+						debugger
 						resolve(dataSnapshot.val());
 					});
 			});
@@ -169,7 +170,7 @@ class FireBase {
 			throw error;
 		}
 	}
-	
+
 }
 
 

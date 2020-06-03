@@ -5,7 +5,7 @@ class DataSaver {
 	}
 
 	init() {
-		return remoteDb.init()
+		return this.remoteDb.init()
 			.then((remoteData) => {
 				this.localDb.saveInitData(remoteData);
 
@@ -26,7 +26,7 @@ class DataSaver {
 			}
 
 			remoteDiff.splice(key, 1);
-			
+
 			return false;
 		});
 

@@ -1,0 +1,21 @@
+.eng-saver__words-list {
+	position: fixed;
+	bottom: 100px;
+	right: 10px;
+	z-index: 1202;
+	font-size: 12px;
+	max-width: 300px;
+
+	li {
+		box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px;
+		border: 1px solid rgb(187, 187, 187);
+		padding: 5px;
+		margin-bottom: 5px;
+		border-radius: 3px;
+
+		&.highlighted {
+			border-color: red;
+		}
+	}
+
+}

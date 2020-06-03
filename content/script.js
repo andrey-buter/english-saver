@@ -1,9 +1,9 @@
 /*
 Pages
-- words list 
+- words list
 - show suggested context
 - options: (need to save them)
-    - trigger stick left/right 
+    - trigger stick left/right
     - set custom size (maybe on words list side)
 
 - options:
@@ -33,6 +33,7 @@ const list = new DomList();
 
 saver.init()
     .then((words) => {
+		debugger
         if (saver.getWords().length) {
             saver.getWords().forEach((item) => {
                 list.addItem(item.wordInContext);
@@ -70,7 +71,7 @@ const saveButton = createButton( 'Save and Close', ( event ) => {
         context: wordObj.context,
         contextOffset: wordObj.offset,
         contextSelector: wordObj.selector,
-        uri: wordObj.url 
+        uri: wordObj.url
     });
 
     toast.hide();
@@ -121,14 +122,14 @@ function handleSelection(selection) {
     // highlighter = new Highlighter( selection );
 
     // highlighter.doHighlight();
-    
+
     const sentence = engSelection.getSentence();
     const word = engSelection.getSelectionObject().word;
 
     if ( saver.hasWord( word ) ) {
         list.highlightItem( word );
     }
-    
+
     toast.context( sentence );
     toast.show();
 }
