@@ -24,11 +24,11 @@
   },
   "rulesDirectory": [],
   // @see https://github.com/palantir/tslint-react/blob/master/tslint.json
-//   "max-classes-per-file": {
-//     "options": [
-//       2
-//     ]
-//   },
+  //   "max-classes-per-file": {
+  //     "options": [
+  //       2
+  //     ]
+  //   },
   "indent": [
     true,
     "tabs",

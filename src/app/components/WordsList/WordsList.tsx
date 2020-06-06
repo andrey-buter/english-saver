@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Word } from "../../models/word.model";
 
-// import '../styles/App.css';
+import './WordsList.scss';
 
 export class WordsList extends Component<{words: Word[]}> {
 	render() {

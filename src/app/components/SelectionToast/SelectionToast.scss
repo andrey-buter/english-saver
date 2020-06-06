@@ -1,0 +1,13 @@
+.eng-saver__toast {
+	position: fixed;
+	z-index: 1202;
+	bottom: 10px;
+	right: 10px;
+	background: #fff;
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px;
+	border: 1px solid rgb(187, 187, 187);
+	display: none;
+	padding: 5px;
+	font-size: 12px;
+	max-width: 300px;
+}

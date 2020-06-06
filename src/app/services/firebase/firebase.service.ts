@@ -1,4 +1,7 @@
-import { initializeApp, analytics, auth, database, User } from 'firebase';
+import * as firebase from 'firebase/app';
+import 'firebase/database';
+import 'firebase/auth';
+import 'firebase/analytics';
 import { WordsDatabase } from '../../models/words-database.model';
 import { Word } from '../../models/word.model';
 
@@ -14,22 +17,22 @@ export class FirebaseService {
 		measurementId: "G-XGM265DLSR"
 	};
 
-	user: User | undefined;
+	user: firebase.User | undefined | null;
 	// onAuthCallBack;
 
 	async init() {
 	// init(onAuthCallBack) {
 		// this.onAuthCallBack = onAuthCallBack;
 
-		initializeApp(this.#options);
-		analytics();
+		console.log(firebase.initializeApp(this.#options));
+		console.log(firebase.analytics());
 
 		return await this.onAuth();
 	}
 
 	async registerUser(email: string, password: string): Promise<string> {
 		try {
-			const user = await auth().createUserWithEmailAndPassword(email, password);
+			const user = await firebase.auth().createUserWithEmailAndPassword(email, password);
 
 			if (!user.user?.uid) {
 				throw new Error("[FirebaseService.registerUser] user.user.uid doesn't exist");
@@ -43,9 +46,9 @@ export class FirebaseService {
 		}
 	}
 
-	async signInUser(email: string, password: string): Promise<User> {
+	async signInUser(email: string, password: string): Promise<firebase.User> {
 		try {
-			const user = await auth().signInWithEmailAndPassword(email, password);
+			const user = await firebase.auth().signInWithEmailAndPassword(email, password);
 
 			if (!user.user?.uid) {
 				throw new Error('[FirebaseService.signInUser] user.user.uid doesn\'t exist');
@@ -59,7 +62,7 @@ export class FirebaseService {
 
 	private onAuth(): Promise<WordsDatabase> {
 		return new Promise((resolve, reject) => {
-			auth().onAuthStateChanged(async (user) => {
+			firebase.auth().onAuthStateChanged(async (user) => {
 				if (!user) {
 					user = await this.signInUser('admin@admin.com', 'admin123');
 				}
@@ -79,12 +82,12 @@ export class FirebaseService {
 	}
 
 	// async getItemById(id: string) {
-	// 	return await database().ref('/words/' + id).once('value').val();
+	// 	return await firebase.database().ref('/words/' + id).once('value').val();
 	// }
 
 	async logOut() {
 		try {
-			auth().signOut();
+			firebase.auth().signOut();
 		} catch (error) {
 			throw error;
 		}
@@ -95,7 +98,7 @@ export class FirebaseService {
 			throw new Error('[FirebaseService.addItem] user.uid is undefined');
 		}
 		try {
-			const response = await database().ref('words').push({
+			const response = await firebase.database().ref('words').push({
 				userId: this.user.uid,
 				...item
 			});
@@ -115,7 +118,7 @@ export class FirebaseService {
 			throw new Error('[FirebaseService] user.uid is undefined');
 		}
 		try {
-			await database().ref('words').child(id).update({
+			await firebase.database().ref('words').child(id).update({
 				userId: this.user.uid,
 				...item
 			});
@@ -127,7 +130,7 @@ export class FirebaseService {
 
 	async removeItem(id: string) {
 		try {
-			await database().ref('words').child(id).remove();
+			await firebase.database().ref('words').child(id).remove();
 
 			return true;
 		} catch (error) {
@@ -137,11 +140,11 @@ export class FirebaseService {
 
 	private async loadAll(): Promise<WordsDatabase> {
 		try {
-			let data = await database().ref('words').once('value');
+			let data = await firebase.database().ref('words').once('value');
 			data = data.val();
 
 			return new Promise(async (resolve) => {
-				await database()
+				await firebase.database()
 					.ref('words')
 					.orderByChild('uri')
 					.equalTo(window.location.href)
@@ -150,7 +153,7 @@ export class FirebaseService {
 					});
 			});
 
-			// let data2 = await database()
+			// let data2 = await firebase.database()
 			// 	.ref('words')
 			// 	.orderByChild('uri')
 			// 	.equalTo(window.location.href)
