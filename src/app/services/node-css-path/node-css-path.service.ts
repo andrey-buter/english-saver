@@ -1,6 +1,6 @@
 
 export class NodeCssPath {
-	#blockNodes = /^(div|li|p|body)$/ ; // start with (^) and end ($)
+	#blockTags = /^(div|li|p|body)$/ ; // start with (^) + end on ($)
 
 	// startSelectionTextNodeNumber
 	// endSelectionTextNodeNumber
@@ -8,7 +8,9 @@ export class NodeCssPath {
 	// endOffset
 	// parent selector
 
-	
+	getNumbersInParentsNodesUntilBLockTag() {
+
+	}
 
 	getParentCssSelector(node: Node, depth = 3, cssSelectors: string[] = []): string {
 		const parent = this.getParentElement(node);
@@ -34,7 +36,7 @@ export class NodeCssPath {
 	}
 
 	private isBlockParentNode(textNode: Node) {
-		return this.#blockNodes.test(this.getParentElement(textNode).tagName.toLowerCase() || 'noop');
+		return this.#blockTags.test(this.getParentElement(textNode).tagName.toLowerCase() || 'noop');
 	}
 
 	private getElementCssSelector(element: HTMLElement): string {

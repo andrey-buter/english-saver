@@ -188,12 +188,33 @@ describe('Test selection in single Node', () => {
 		}
 	});
 
-	it('should return index of a current text node', () => {
+	it('should return index in parent block tag of a current text node', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `<div ${tagName}>selection</div>`;
 		document.body.innerHTML = `<span ${tagName}>selection</span>`;
 		document.body.innerHTML = `<div><span ${tagName}>selection</span></div>`;
 		document.body.innerHTML = `<div>Some text <a>link</a> then text <span ${tagName}>selection</span></div>`;
+		
+		// ---------------
+		document.body.innerHTML = `
+			<div>
+				Some Text here
+				<a>
+					<b>Test text</b>
+					Some Text Here
+					<b>
+						Some 
+						<span ${tagName}>selection</span>
+					</b>
+				</a>
+			</div>`;
+
+		expect(result).toEqual([
+			['span', null],
+			['b', 1],
+			['a', 2],
+			['div', 1]
+		])
 	})
 });
