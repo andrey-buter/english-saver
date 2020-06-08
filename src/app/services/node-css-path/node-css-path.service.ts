@@ -1,6 +1,10 @@
+import { NodeNumberInParent } from "./node-number-in-parent.model";
 
 export class NodeCssPath {
 	#blockTags = /^(div|li|p|body)$/ ; // start with (^) + end on ($)
+	#nonBlockTagsLimit = 10;
+	#cssSelectorDepth = 3;
+	#cssSelectorsDevider = ' ';
 
 	// startSelectionTextNodeNumber
 	// endSelectionTextNodeNumber
@@ -8,11 +12,64 @@ export class NodeCssPath {
 	// endOffset
 	// parent selector
 
-	getNumbersInParentsNodesUntilBLockTag() {
+	getPath(node: Node) {
+		const pathInFirstParent = this.getNumbersInParentsNodesUntilBlockTag(node);
+		const innerElements = pathInFirstParent.length - 1;
+		const cssParentsSelector = this.getParentCssSelector(node, innerElements + this.#cssSelectorDepth);
 
+		const selectors = cssParentsSelector
+			.split(this.#cssSelectorsDevider)
+			.slice(0, -1 * innerElements)
+			.join(this.#cssSelectorsDevider)
+
+		return {
+			pathInFirstParent,
+			cssParentsSelector: selectors
+		}
 	}
 
-	getParentCssSelector(node: Node, depth = 3, cssSelectors: string[] = []): string {
+	private getNumbersInParentsNodesUntilBlockTag(originNode: Node, limit = this.#nonBlockTagsLimit): NodeNumberInParent[] {
+		let node = originNode;
+		let result = [];
+
+		while (true) {
+			result.push(this.getNumberNodeInParent(node));
+			limit--;
+
+			if (this.isParentBlockTag(node)) {
+				break;
+			}
+
+			if (0 === limit) {
+				throw new Error(`[NodeCssPath.getNumbersInParentsNodesUntilBlockTag] There isn't block tags in ${limit} ancestors`);
+			}
+
+			node = this.getParentElement(node);
+		}
+
+		return result;
+	}
+
+	private getNumberNodeInParent(originNode: Node): NodeNumberInParent {
+		let counter = 0;
+		let node = originNode;
+
+		while(true) {
+			if (!node.previousSibling) {
+				break;
+			}
+
+			node = node.previousSibling;
+			counter++;
+		}
+
+		return {
+			parentTag: this.getParentElement(originNode).tagName.toLowerCase(),
+			number: counter
+		}
+	}
+
+	private getParentCssSelector(node: Node, depth = this.#cssSelectorDepth, cssSelectors: string[] = []): string {
 		const parent = this.getParentElement(node);
 		const selector = this.getElementCssSelector(parent);
 
@@ -35,7 +92,7 @@ export class NodeCssPath {
 		return element.childNodes.length > 0;
 	}
 
-	private isBlockParentNode(textNode: Node) {
+	private isParentBlockTag(textNode: Node) {
 		return this.#blockTags.test(this.getParentElement(textNode).tagName.toLowerCase() || 'noop');
 	}
 
@@ -57,9 +114,9 @@ export class NodeCssPath {
 	// selector[1] - parent
 	// expected queue: 'parent > child'
 	private getHierarchyCssSelector(selectors: string[]): string {
-		return selectors.reverse().join(' ');
+		return selectors.reverse().join(this.#cssSelectorsDevider);
 	}
-	
+
 	// <html> doesn't have parent element
 	// so to avoid checking of NULL every where
 	// I will return body element if parentElement doesn't exist
