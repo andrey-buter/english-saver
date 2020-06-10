@@ -6,6 +6,7 @@ import { DataSaverService } from './services/saver/saver.service';
 import { LocalDatabaseService } from './services/local-db/local-db.service';
 import { SelectionToast } from "./components/SelectionToast/SelectionToast";
 import { SelectionHandler } from "./services/selection-handler/selection-handler.service";
+import { WordData } from "./models/word-data.model";
 
 // import '../styles/App.css';
 
@@ -25,9 +26,7 @@ export default class App extends Component<{}, { words: Word[], toast: string | 
 		super(props);
 
 		this.initDb();
-		selectionHandler.onSelect((selector) => {
-			this.onSelectWord()
-		});
+		selectionHandler.onSelect((wordData: WordData) => this.onSelectWord(wordData));
 	}
 	render() {
 		const { words, toast } = this.state;
@@ -71,7 +70,9 @@ export default class App extends Component<{}, { words: Word[], toast: string | 
 		});
 	}
 
-	private onSelectWord() {
-
+	private onSelectWord(wordData: WordData) {
+		this.setState({
+			toast: wordData.selection
+		});
 	}
 }

@@ -1,6 +1,11 @@
+import { SelectWord } from "../select-word/select-word.service";
+import { WordData } from "../../models/word-data.model";
+
+type RunOnSelect = (wordData: WordData) => void;
+
 export class SelectionHandler {
 	#selectionTimeout: NodeJS.Timeout | undefined;
-	#runOnSelect = (): void => {}
+	#runOnSelect = (wordData: WordData): void => {}
 
 	constructor() {
 		document.addEventListener('selectionchange', () => {
@@ -14,7 +19,7 @@ export class SelectionHandler {
 		if (!selection) {
 			return;
 		}
-		
+
 		if ('Range' !== selection.type) {
 			return;
 		}
@@ -30,16 +35,16 @@ export class SelectionHandler {
 		}
 
 		this.#selectionTimeout = setTimeout(() => {
-			engSelection = new SelectionContext(selection);
+			const selectedWord = new SelectWord(selection);
 
 			// highlighter = new Highlighter( selection );
 
 			// highlighter.doHighlight();
 
-			const sentence = engSelection.getSentence();
-			const word = engSelection.getSelectionObject().word;
+			// const sentence = engSelection.getSentence();
+			// const word = engSelection.getSelectionObject().word;
 
-			this.#runOnSelect(engSelection);
+			this.#runOnSelect(selectedWord.getData());
 
 			// if (saver.hasWord(word)) {
 			// 	list.highlightItem(word);
@@ -50,7 +55,7 @@ export class SelectionHandler {
 		}, 1000);
 	}
 
-	onSelect(callback: () => void) {
+	onSelect(callback: RunOnSelect) {
 		this.#runOnSelect = callback;
 	}
 }

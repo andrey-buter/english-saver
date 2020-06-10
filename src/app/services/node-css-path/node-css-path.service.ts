@@ -1,4 +1,5 @@
-import { NodeNumberInParent } from "./node-number-in-parent.model";
+import { NodeNumberInParent } from "../../models/node-number-in-parent.model";
+import { NodePath } from "../../models/node-path.model";
 
 export class NodeCssPath {
 	#blockTags = /^(div|li|p|body)$/ ; // start with (^) + end on ($)
@@ -12,19 +13,19 @@ export class NodeCssPath {
 	// endOffset
 	// parent selector
 
-	getPath(node: Node) {
+	getPath(node: Node): NodePath {
 		const pathInFirstParent = this.getNumbersInParentsNodesUntilBlockTag(node);
 		const innerElements = pathInFirstParent.length - 1;
-		const cssParentsSelector = this.getParentCssSelector(node, innerElements + this.#cssSelectorDepth);
+		const cssParentSelector = this.getParentCssSelector(node, innerElements + this.#cssSelectorDepth);
 
-		const selectors = cssParentsSelector
+		const selectors = cssParentSelector
 			.split(this.#cssSelectorsDevider)
 			.slice(0, -1 * innerElements)
 			.join(this.#cssSelectorsDevider)
 
 		return {
-			pathInFirstParent,
-			cssParentsSelector: selectors
+			pathInParent: pathInFirstParent,
+			cssParentSelector: selectors
 		}
 	}
 

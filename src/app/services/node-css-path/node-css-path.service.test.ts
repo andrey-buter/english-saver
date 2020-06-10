@@ -1,5 +1,5 @@
 import { NodeCssPath } from "./node-css-path.service";
-import { NodeNumberInParent } from "./node-number-in-parent.model";
+import { NodeNumberInParent } from "../../models/node-number-in-parent.model";
 
 describe('Test class NodeCssPath', () => {
 	const text = 'Some interesting text';
@@ -385,7 +385,7 @@ describe('Test class NodeCssPath', () => {
 		}
 
 		expect(result).toEqual({
-			pathInFirstParent: [
+			pathInParent: [
 				{
 					parentTag: 'span',
 					number: 0
@@ -399,7 +399,7 @@ describe('Test class NodeCssPath', () => {
 					number: 3
 				},
 			],
-			cssParentsSelector: '.class div p'
+			cssParentSelector: '.class div p'
 		});
 	});
 });
