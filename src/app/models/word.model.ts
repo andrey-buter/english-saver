@@ -1,15 +1,12 @@
+import { NodePath } from "./node-path.model";
+
 export interface Word {
 	id?: string;
+	selection: string;
 	originWord: string;
-	wordInContext: string;
+	context: string;
+	startRange: NodePath;
+	endRange: NodePath;
 	translation: string;
-	context: {
-		context: string;
-		offset: number;
-		rawContext: string;
-		rawOffset: number;
-	};
-	contextOffset: string;
-	contextSelector: string;
 	uri: string;
 }

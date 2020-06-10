@@ -6,7 +6,6 @@ import { DataSaverService } from './services/saver/saver.service';
 import { LocalDatabaseService } from './services/local-db/local-db.service';
 import { SelectionToast } from "./components/SelectionToast/SelectionToast";
 import { SelectionHandler } from "./services/selection-handler/selection-handler.service";
-import { WordData } from "./models/word-data.model";
 
 // import '../styles/App.css';
 
@@ -16,17 +15,24 @@ const localDb = new LocalDatabaseService();
 const saver = new DataSaverService(localDb, remoteDb);
 const selectionHandler = new SelectionHandler();
 
-export default class App extends Component<{}, { words: Word[], toast: string | null }> {
+interface State {
+	words: Word[];
+	toast: string | null;
+}
+
+export default class App extends Component<{}, State> {
 	state = {
 		words: [],
 		toast: null
-	}
+	} as State;
+
+	word: Word | null = null;
 
 	constructor(props: {}) {
 		super(props);
 
 		this.initDb();
-		selectionHandler.onSelect((wordData: WordData) => this.onSelectWord(wordData));
+		selectionHandler.onSelect((wordData: Word) => this.onSelectWord(wordData));
 	}
 	render() {
 		const { words, toast } = this.state;
@@ -41,15 +47,9 @@ export default class App extends Component<{}, { words: Word[], toast: string | 
 	}
 
 	saveCloseToast = (): void => {
-		// saver.addItem({
-		// 	originWord: null,
-		// 	wordInContext: wordObj.word,
-		// 	translation: wordObj.translation,
-		// 	context: wordObj.context,
-		// 	contextOffset: wordObj.offset,
-		// 	contextSelector: wordObj.selector,
-		// 	uri: wordObj.url
-		// }))
+		if (this.word) {
+			saver.addItem(this.word);
+		}
 
 		// do highlight
 
@@ -57,9 +57,11 @@ export default class App extends Component<{}, { words: Word[], toast: string | 
 	}
 
 	cancel = (): void => {
+		this.word = null;
+
 		this.setState({
 			toast: null
-		})
+		});
 	}
 
 	private initDb() {
@@ -70,7 +72,9 @@ export default class App extends Component<{}, { words: Word[], toast: string | 
 		});
 	}
 
-	private onSelectWord(wordData: WordData) {
+	private onSelectWord(wordData: Word) {
+		this.word = wordData;
+
 		this.setState({
 			toast: wordData.selection
 		});

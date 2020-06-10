@@ -4,8 +4,8 @@
  * 2) get selection path to save it
  */
 
-import { NodePath } from "../../models/node-path.model";
 import { NodeCssPath } from "../node-css-path/node-css-path.service";
+import { Word } from "../../models/word.model";
 
 const nodepath = new NodeCssPath();
 
@@ -31,9 +31,10 @@ export class SelectWord {
 		this.selection = selection.toString();
 	}
 
-	getData(): WordData {
+	getData(): Word {
 		return {
 			selection: this.selection,
+			originWord: this.selection,
 			context: '',
 			startRange: {
 				...nodepath.getPath(this.startContainer),
@@ -47,13 +48,4 @@ export class SelectWord {
 			uri: window.location.href
 		}
 	}
-}
-
-interface WordData {
-	selection: string;
-	context: string;
-	startRange: NodePath;
-	endRange: NodePath;
-	translation: string;
-	uri: string;
 }

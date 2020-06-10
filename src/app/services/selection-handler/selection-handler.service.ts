@@ -1,11 +1,11 @@
 import { SelectWord } from "../select-word/select-word.service";
-import { WordData } from "../../models/word-data.model";
+import { Word } from "../../models/word.model";
 
-type RunOnSelect = (wordData: WordData) => void;
+type RunOnSelect = (wordData: Word) => void;
 
 export class SelectionHandler {
 	#selectionTimeout: NodeJS.Timeout | undefined;
-	#runOnSelect = (wordData: WordData): void => {}
+	#runOnSelect = (wordData: Word): void => {}
 
 	constructor() {
 		document.addEventListener('selectionchange', () => {
