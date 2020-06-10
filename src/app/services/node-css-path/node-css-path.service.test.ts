@@ -277,6 +277,7 @@ describe('Test class NodeCssPath', () => {
 		let result;
 
 		if (textNode) {
+			// @ts-ignore
 			result = nodePath.getNumbersInParentsNodesUntilBlockTag(textNode);
 		}
 

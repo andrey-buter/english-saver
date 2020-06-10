@@ -34,7 +34,7 @@ export default class App extends Component<{}, { words: Word[], toast: string | 
 		return (
 			<>
 				<WordsList words={words}></WordsList>
-				{toast ?? <SelectionToast toast={toast} saveCloseToast={this.saveCloseToast} cancel={this.cancel}></SelectionToast> }
+				{toast ? <SelectionToast toast={toast} saveCloseToast={this.saveCloseToast} cancel={this.cancel}></SelectionToast> : null }
 				<span>Tadam</span>
 			</>
 		);
