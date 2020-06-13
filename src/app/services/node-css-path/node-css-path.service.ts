@@ -18,12 +18,10 @@ export class NodeCssPath {
 		const innerElements = pathInFirstParent.length - 1;
 		const cssParentSelector = this.getParentCssSelector(node, innerElements + this.#cssSelectorDepth);
 
-		const selectors = cssParentSelector
-			.split(this.#cssSelectorsDevider)
-			.slice(0, -1 * innerElements)
+		const cssAncestorsArray = cssParentSelector.split(this.#cssSelectorsDevider);
+		const selectors = cssAncestorsArray
+			.slice(0, cssAncestorsArray.length - innerElements)
 			.join(this.#cssSelectorsDevider);
-
-		debugger
 
 		return {
 			pathInParent: pathInFirstParent,

@@ -54,6 +54,7 @@ export default class App extends Component<{}, State> {
 		}
 
 		const word = { ...this.word };
+
 		saver.addItem(word)
 			.then((id) => {
 				word.id = id;
@@ -81,6 +82,7 @@ export default class App extends Component<{}, State> {
 
 	private initDb() {
 		saver.init().then((data) => {
+			debugger
 			this.setState({
 				words: data
 			})

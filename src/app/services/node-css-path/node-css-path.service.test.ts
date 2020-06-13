@@ -356,7 +356,7 @@ describe('Test class NodeCssPath', () => {
 		] as NodeNumberInParent[]);
 	});
 
-	it('shoud return node path data', () => {
+	fit('shoud return node path data', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `
@@ -401,6 +401,35 @@ describe('Test class NodeCssPath', () => {
 				},
 			],
 			cssParentSelector: '.class div p'
+		});
+	});
+
+	fit('shoud return node path data', () => {
+		const tagName = 'textTag';
+
+		document.children[0].innerHTML = `
+			text
+			<div ${tagName}>
+				0 node
+			</div>
+		`;
+
+		const textNode = document.querySelector('[textTag]')?.childNodes[0];
+
+		let result;
+
+		if (textNode) {
+			result = nodePath.getPath(textNode);
+		}
+
+		expect(result).toEqual({
+			pathInParent: [
+				{
+					parentTag: 'div',
+					number: 0,
+				}
+			],
+			cssParentSelector: 'html body div',
 		});
 	});
 });
