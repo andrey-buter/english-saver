@@ -21,9 +21,7 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				// test: /\.ts?$/,
-				test: /^(?!.*\.test\.ts$).*\.ts$/,
-				// test: /^\/(?!node_modules).*\/.*\/test\/.*\.ts$/,
+				test: /\.ts?$/,
 				enforce: 'pre',
 				loader: 'tslint-loader',
 				options: {
@@ -33,6 +31,9 @@ module.exports = {
 			{
 				test: /\.tsx?$/,
 				loader: 'ts-loader',
+				options: {
+					onlyCompileBundledFiles: true,
+				},
 			},
 			{
 				test: /\.(sa|sc|c)ss$/,
