@@ -3,6 +3,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const IgnorePlugin = require('webpack').IgnorePlugin;
 
 module.exports = {
 	entry: './src/main.tsx',
@@ -20,9 +21,28 @@ module.exports = {
 	},
 	module: {
 		rules: [
+			// {
+			// 	test: /\.ts$/,
+			// 	// test: /.+(?<!\.test)\.ts$/,
+			// 	enforce: 'pre',
+			// 	loader: 'tslint-loader',
+			// 	exclude: /\.test\.ts/,
+			// 	options: {
+			// 		/* Loader options go here */
+			// 	},
+			// },
+			// {
+			// 	test: /\.test\.ts/,
+			// 	enforce: 'pre',
+			// 	loader: 'ts-loader',
+			// 	options: {
+			// 		configFile: 'tsconfig.test.json'
+			// 	}
+			// },
 			{
-				// test: /\.ts?$/,
-				test: /^(?!.*\.test\.ts$).*\.ts$/,
+<<<<<<< Updated upstream
+				test: /\.ts?$/,
+				// test: /^(?!.*\.test\.ts$).*\.ts$/,
 				// test: /^\/(?!node_modules).*\/.*\/test\/.*\.ts$/,
 				enforce: 'pre',
 				loader: 'tslint-loader',
@@ -31,8 +51,23 @@ module.exports = {
 				},
 			},
 			{
-				test: /\.tsx?$/,
+				// test: /\.tsx?$/,
 				loader: 'ts-loader',
+				test: function(modulePath) {
+					if (modulePath.endsWith('.ts') || modulePath.endsWith('.tsx')) {
+						console.log([/.+(?<!\.test)\.tsx?$/.test(modulePath), modulePath]);
+					}
+				
+					
+					return (modulePath.endsWith('.ts') || modulePath.endsWith('.tsx')) && !modulePath.endsWith('test.ts');
+				},
+=======
+				// test: /.+(?<!\.test)\.tsx?$/,
+				test: /\.tsx?$/,
+				// test: /.+(?<!\.test)\.tsx?$/,
+				loader: 'ts-loader',
+				exclude: [/\.test\.ts/],
+>>>>>>> Stashed changes
 			},
 			{
 				test: /\.(sa|sc|c)ss$/,
@@ -82,5 +117,25 @@ module.exports = {
 			filename: 'style-[hash].css',
 			allChunks: true,
 		}),
+<<<<<<< Updated upstream
+		// new IgnorePlugin({
+		// 	resourceRegExp: /\.test\.ts$/,
+		// 	// checkResource(resource, context) {
+		// 	// 	console.log(resource, context);
+
+		// 	// 	// do something with resource
+		// 	// 	return true;
+		// 	// }
+		// })
+=======
+		new IgnorePlugin({
+			checkResource(resource) {
+				console.log(resource);
+				
+				// do something with resource
+				return true | false;
+			}
+		})
+>>>>>>> Stashed changes
 	],
 };

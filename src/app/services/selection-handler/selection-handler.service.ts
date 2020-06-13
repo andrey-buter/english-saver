@@ -4,7 +4,7 @@ import { Word } from "../../models/word.model";
 type RunOnSelect = (wordData: Word) => void;
 
 export class SelectionHandler {
-	#selectionTimeout: NodeJS.Timeout | undefined;
+	#selectionTimeout: number | undefined;
 	#runOnSelect = (wordData: Word): void => {}
 
 	constructor() {

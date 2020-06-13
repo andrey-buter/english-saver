@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "serve": "webpack-dev-server --mode=development",
+    "serve": "yarn && webpack-dev-server --mode=development",
     "build": "webpack",
     "build:prod": "webpack --config webpack.config.prod.js",
     "test": "jest"
