@@ -3,7 +3,6 @@ const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const IgnorePlugin = require('webpack').IgnorePlugin;
 
 module.exports = {
 	entry: './src/main.tsx',
@@ -21,26 +20,40 @@ module.exports = {
 	},
 	module: {
 		rules: [
+			// {
+			// 	test: /\.ts?$/,
+			// 	enforce: 'pre',
+			// 	loader: 'tslint-loader',
+			// 	options: {
+			// 		/* Loader options go here */
+			// 	},
+			// },
 			{
-				test: /\.ts?$/,
-				// test: /^(?!.*\.test\.ts$).*\.ts$/,
-				// test: /^\/(?!node_modules).*\/.*\/test\/.*\.ts$/,
-				enforce: 'pre',
-				loader: 'tslint-loader',
+				test: /\.tsx?$/,
+				loader: 'ts-loader',
+				// test: function (modulePath) {
+				// 	if (modulePath.endsWith('.ts') || modulePath.endsWith('.tsx')) {
+				// 		console.log([/.+(?<!\.test)\.tsx?$/.test(modulePath), modulePath]);
+				// 	}
+
+				// 	return (modulePath.endsWith('.ts') || modulePath.endsWith('.tsx')) && !modulePath.endsWith('test.ts');
+				// },
 				options: {
-					/* Loader options go here */
+					onlyCompileBundledFiles: true,
 				},
 			},
 			{
-				// test: /\.tsx?$/,
+				test: /\.test\.ts$/,
 				loader: 'ts-loader',
-				test: function(modulePath) {
-					if (modulePath.endsWith('.ts') || modulePath.endsWith('.tsx')) {
-						console.log([/.+(?<!\.test)\.tsx?$/.test(modulePath), modulePath]);
-					}
-				
-					
-					return (modulePath.endsWith('.ts') || modulePath.endsWith('.tsx')) && !modulePath.endsWith('test.ts');
+				// test: function (modulePath) {
+				// 	if (modulePath.endsWith('.ts') || modulePath.endsWith('.tsx')) {
+				// 		console.log([/.+(?<!\.test)\.tsx?$/.test(modulePath), modulePath]);
+				// 	}
+
+				// 	return (modulePath.endsWith('.ts') || modulePath.endsWith('.tsx')) && !modulePath.endsWith('test.ts');
+				// },
+				options: {
+					configFile: './tsconfig.test.json',
 				},
 			},
 			{
@@ -91,14 +104,5 @@ module.exports = {
 			filename: 'style-[hash].css',
 			allChunks: true,
 		}),
-		// new IgnorePlugin({
-		// 	resourceRegExp: /\.test\.ts$/,
-		// 	// checkResource(resource, context) {
-		// 	// 	console.log(resource, context);
-
-		// 	// 	// do something with resource
-		// 	// 	return true;
-		// 	// }
-		// })
 	],
 };

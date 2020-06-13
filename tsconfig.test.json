@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+	"typeRoots": [ /* List of folders to include type definitions from. */
+		"node_modules/@types",
+		// "node_modules/@types",
+		"src/typings.d.ts"
+	],
+  }
+}
