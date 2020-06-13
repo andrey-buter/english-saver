@@ -48,6 +48,8 @@ export class DataSaverService {
 		const id = await this.remoteDb.addItem(word);
 
 		this.localDb.addItem(id, word);
+
+		return id;
 	}
 
 	getWords() {

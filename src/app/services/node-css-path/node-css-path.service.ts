@@ -21,7 +21,9 @@ export class NodeCssPath {
 		const selectors = cssParentSelector
 			.split(this.#cssSelectorsDevider)
 			.slice(0, -1 * innerElements)
-			.join(this.#cssSelectorsDevider)
+			.join(this.#cssSelectorsDevider);
+
+		debugger
 
 		return {
 			pathInParent: pathInFirstParent,

@@ -47,13 +47,28 @@ export default class App extends Component<{}, State> {
 	}
 
 	saveCloseToast = (): void => {
-		if (this.word) {
-			saver.addItem(this.word);
+		if (!this.word) {
+			alert('No selected word!');
+			this.cancel();
+			return;
 		}
 
-		// do highlight
+		const word = { ...this.word };
+		saver.addItem(word)
+			.then((id) => {
+				word.id = id;
 
-		this.cancel();
+				this.setState({
+					words: [
+						...this.state.words,
+						word,
+					]
+				});
+
+				this.cancel();
+			});
+
+		// do highlight
 	}
 
 	cancel = (): void => {
