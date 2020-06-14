@@ -1,5 +1,6 @@
 import { NodeCssPath } from "./node-css-path.service";
 import { NodeNumberInParent } from "../../models/node-number-in-parent.model";
+import { NodePathPageObject } from "./node-css-path.service.po";
 
 describe('Test class NodeCssPath', () => {
 	const text = 'Some interesting text';
@@ -9,6 +10,7 @@ describe('Test class NodeCssPath', () => {
 	// let select;
 
 	let nodePath: NodeCssPath;
+	const po = new NodePathPageObject();
 
 	beforeAll(() => {
 		// select = new SelectWord();
@@ -228,6 +230,8 @@ describe('Test class NodeCssPath', () => {
 		const div = document.createElement('div');
 		div.textContent = 'selection';
 
+		const div = po.getDiv();
+
 		// @ts-ignore
 		const result = nodePath.getNumbersInParentsNodesUntilBlockTag(div.childNodes[0]);
 
@@ -356,7 +360,7 @@ describe('Test class NodeCssPath', () => {
 		] as NodeNumberInParent[]);
 	});
 
-	fit('shoud return node path data', () => {
+	it('shoud return node path data', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `
@@ -404,7 +408,7 @@ describe('Test class NodeCssPath', () => {
 		});
 	});
 
-	fit('shoud return node path data', () => {
+	it('shoud return node path data', () => {
 		const tagName = 'textTag';
 
 		document.children[0].innerHTML = `
