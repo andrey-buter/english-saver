@@ -8,7 +8,7 @@ describe('[Highlighter]', () => {
 		highlighter = new Highlighter();
 	})
 
-	it('should find node in parent tag with single text node', () => {
+	it('should find text node in parent tag with single text node', () => {
 		const path = [
 			{
 				parentTag: 'div',

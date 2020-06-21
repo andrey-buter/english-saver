@@ -10,7 +10,7 @@ export class NodePathPageObject {
 		return div;
 	}
 
-	getDivFirstChild(text) {
+	getDivFirstChild(text?: string) {
 		return this.getDiv(text).childNodes[0];
 	}
 }

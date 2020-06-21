@@ -34,9 +34,9 @@ export class SelectionHandler {
 			clearTimeout(this.#selectionTimeout);
 		}
 
-		// ! TODO: Find a solition to resoleve typings conflict for setTimeout()
+		// ! TODO: Find a solution to resolve typings conflict for setTimeout()
 		// ! I don't know how to resolve .d.ts conflict between dom.d.ts and @node
-		// ! They have different decloration of setTimeout
+		// ! They have different declaration of setTimeout
 		// ! Check branch jest-1!
 		// @ts-ignore
 		this.#selectionTimeout = setTimeout(() => {

@@ -200,7 +200,7 @@ describe('Test class NodeCssPath', () => {
 		expect(result).toBe(`#${id} .${className}`);
 	});
 
-	it('shoud return node number in parent if parent has single text node', () => {
+	it('should return node number in parent if parent has single text node', () => {
 		const div = document.createElement('div');
 		div.textContent = 'Single node';
 
@@ -213,7 +213,7 @@ describe('Test class NodeCssPath', () => {
 		} as NodeNumberInParent);
 	});
 
-	it('shoud return node number in parent if parent has several nodes', () => {
+	it('should return node number in parent if parent has several nodes', () => {
 		const div = document.createElement('div');
 		div.innerHTML = '0 node <span>1st node</span> 2d node';
 
@@ -226,10 +226,7 @@ describe('Test class NodeCssPath', () => {
 		} as NodeNumberInParent);
 	});
 
-	it('shoud return parents node counters data in div with single text node', () => {
-		const div = document.createElement('div');
-		div.textContent = 'selection';
-
+	it('should return parents node counters data in div with single text node', () => {
 		const div = po.getDiv();
 
 		// @ts-ignore
@@ -243,7 +240,7 @@ describe('Test class NodeCssPath', () => {
 		] as NodeNumberInParent[]);
 	});
 
-	it('shoud throw error if a text node has NON block tag parents', () => {
+	it('should throw error if a text node has NON block tag parents', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `
@@ -271,7 +268,7 @@ describe('Test class NodeCssPath', () => {
 		expect(result).toThrow(Error);
 	});
 
-	it('shoud return parents node counters data if text node has 2 parents: div > span', () => {
+	it('should return parents node counters data if text node has 2 parents: div > span', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `<div><span ${tagName}>some text</span></div>`;
@@ -297,7 +294,7 @@ describe('Test class NodeCssPath', () => {
 		] as NodeNumberInParent[]);
 	});
 
-	it('shoud return parents node counters data if text node has 2 parents: div > p', () => {
+	it('should return parents node counters data if text node has 2 parents: div > p', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `<div><p ${tagName}>some text</p></div>`;
@@ -319,7 +316,7 @@ describe('Test class NodeCssPath', () => {
 		] as NodeNumberInParent[]);
 	});
 
-	it('shoud return parents node counters data if text node has 3 parents: div > b > span', () => {
+	it('should return parents node counters data if text node has 3 parents: div > b > span', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `
@@ -360,7 +357,7 @@ describe('Test class NodeCssPath', () => {
 		] as NodeNumberInParent[]);
 	});
 
-	it('shoud return node path data', () => {
+	it('should return node path data', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `
@@ -408,7 +405,7 @@ describe('Test class NodeCssPath', () => {
 		});
 	});
 
-	it('shoud return node path data', () => {
+	it('should return node path data', () => {
 		const tagName = 'textTag';
 
 		document.children[0].innerHTML = `
