@@ -2,10 +2,10 @@
   "bracketSpacing": true,
   "printWidth": 140,
   "semi": true,
+  "semicolons": true,
   "singleQuote": true,
   "tabWidth": 4,
   "useTabs": true,
   "editor.formatOnSave": true,
-  "semicolons": true,
   "jsx-single-quote": true
 }

@@ -1,6 +1,11 @@
+import { SelectWord } from "../select-word/select-word.service";
+import { Word } from "../../models/word.model";
+
+type RunOnSelect = (wordData: Word) => void;
+
 export class SelectionHandler {
-	#selectionTimeout: NodeJS.Timeout | undefined;
-	#runOnSelect = (): void => {}
+	#selectionTimeout: number | undefined;
+	#runOnSelect = (wordData: Word): void => {}
 
 	constructor() {
 		document.addEventListener('selectionchange', () => {
@@ -14,7 +19,7 @@ export class SelectionHandler {
 		if (!selection) {
 			return;
 		}
-		
+
 		if ('Range' !== selection.type) {
 			return;
 		}
@@ -29,17 +34,22 @@ export class SelectionHandler {
 			clearTimeout(this.#selectionTimeout);
 		}
 
+		// ! TODO: Find a solition to resoleve typings conflict for setTimeout()
+		// ! I don't know how to resolve .d.ts conflict between dom.d.ts and @node
+		// ! They have different decloration of setTimeout
+		// ! Check branch jest-1!
+		// @ts-ignore
 		this.#selectionTimeout = setTimeout(() => {
-			engSelection = new SelectionContext(selection);
+			const selectedWord = new SelectWord(selection);
 
 			// highlighter = new Highlighter( selection );
 
 			// highlighter.doHighlight();
 
-			const sentence = engSelection.getSentence();
-			const word = engSelection.getSelectionObject().word;
+			// const sentence = engSelection.getSentence();
+			// const word = engSelection.getSelectionObject().word;
 
-			this.#runOnSelect(engSelection);
+			this.#runOnSelect(selectedWord.getData());
 
 			// if (saver.hasWord(word)) {
 			// 	list.highlightItem(word);
@@ -50,7 +60,7 @@ export class SelectionHandler {
 		}, 1000);
 	}
 
-	onSelect(callback: () => void) {
+	onSelect(callback: RunOnSelect) {
 		this.#runOnSelect = callback;
 	}
 }

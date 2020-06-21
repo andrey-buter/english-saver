@@ -10,7 +10,7 @@ export class WordsList extends Component<{words: Word[]}> {
 		return (
 			<ul className="eng-saver__words-list">
 				{words.map((word) => {
-					return <li>{word.wordInContext}</li>;
+					return <li key={word.id}>{word.selection}</li>;
 				})}
 			</ul>
 		);

@@ -9,7 +9,7 @@ export class LocalDatabaseService {
 		const data = this.getData();
 
 		Object.values(data).forEach((word) => {
-			this.#savedWords.push(word.wordInContext);
+			this.#savedWords.push(word.selection);
 		});
 
 		return data;
@@ -17,11 +17,11 @@ export class LocalDatabaseService {
 
 	saveInitData(data: WordsDatabase) {
 		Object.values(data).forEach((word) => {
-			if (this.#savedWords.includes(word.wordInContext)) {
+			if (this.#savedWords.includes(word.selection)) {
 				return;
 			}
 
-			this.#savedWords.push(word.wordInContext);
+			this.#savedWords.push(word.selection);
 		});
 
 		this.saveData(data);
@@ -32,7 +32,7 @@ export class LocalDatabaseService {
 
 		data[id] = word;
 
-		this.#savedWords.push(word.wordInContext);
+		this.#savedWords.push(word.selection);
 
 		this.saveData(data);
 	}
