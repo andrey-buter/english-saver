@@ -1,7 +1,7 @@
 import { NodeCssPath } from "./node-css-path.service";
-import { NodeNumberInParent, ChildNodePath } from "../../models/node-number-in-parent.model";
+import { ChildNodePath } from "../../models/node-number-in-parent.model";
 import { NodePathPageObject } from "./node-css-path.service.po";
-import { NodePath2 } from "../../models/node-path.model";
+import { NodePath } from "../../models/node-path.model";
 
 describe('Test class NodeCssPath', () => {
 	const text = 'Some interesting text';
@@ -58,20 +58,16 @@ describe('Test class NodeCssPath', () => {
 
 	it('should check DIV is parent block-type node', () => {
 		const div = document.createElement('div');
-		div.textContent = text;
-		const textNode = div.childNodes[0];
 
 		// @ts-ignore
-		expect(nodePath.isParentBlockTag(textNode)).toBe(true);
+		expect(nodePath.isBlockTag(div)).toBe(true);
 	});
 
 	it('should check SPAN is NOT parent block=type node', () => {
 		const span = document.createElement('span');
-		span.textContent = text;
-		const textNode = span.childNodes[0];
 
 		// @ts-ignore
-		expect(nodePath.isParentBlockTag(textNode)).toBe(false);
+		expect(nodePath.isBlockTag(span)).toBe(false);
 	});
 
 	it('should return element class css selector if element has ONE class', () => {
@@ -382,10 +378,10 @@ describe('Test class NodeCssPath', () => {
 
 		const textNode = document.querySelector('[textTag]')?.childNodes[0];
 
-		let result: NodePath2 | null = null;
+		let result: NodePath | null = null;
 
 		if (textNode) {
-			result = nodePath.getPath2(textNode);
+			result = nodePath.getPath(textNode);
 		}
 
 		expect(result).toEqual({
@@ -404,7 +400,7 @@ describe('Test class NodeCssPath', () => {
 				},
 			],
 			cssParentSelector: '.class div p'
-		} as NodePath2);
+		} as NodePath);
 	});
 
 	it('should return node path data if parent <html>', () => {
@@ -419,10 +415,10 @@ describe('Test class NodeCssPath', () => {
 
 		const textNode = document.querySelector('[textTag]')?.childNodes[0];
 
-		let result: NodePath2 | null = null;
+		let result: NodePath | null = null;
 
 		if (textNode) {
-			result = nodePath.getPath2(textNode);
+			result = nodePath.getPath(textNode);
 		}
 
 		expect(result).toEqual({
@@ -433,6 +429,6 @@ describe('Test class NodeCssPath', () => {
 				}
 			],
 			cssParentSelector: 'html body div',
-		} as NodePath2);
+		} as NodePath);
 	});
 });

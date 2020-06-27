@@ -1,4 +1,4 @@
-import { NodeNumberInParent } from "../../models/node-number-in-parent.model";
+import { ChildNodePath } from "../../models/node-number-in-parent.model";
 import { Highlighter } from "./highlighter.service";
 
 xdescribe('[Highlighter]', () => {
@@ -10,7 +10,7 @@ xdescribe('[Highlighter]', () => {
 
 	fit('should find textNode in parent tag with single text node', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'div',
 				number: 0,
@@ -28,7 +28,7 @@ xdescribe('[Highlighter]', () => {
 
 	fit('should find the same textNodes in parent tag with single text node', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'div',
 				number: 0,
@@ -47,7 +47,7 @@ xdescribe('[Highlighter]', () => {
 
 	fit('should find textNode in parent tag with single text node', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'div',
 				number: 2,
@@ -67,7 +67,7 @@ xdescribe('[Highlighter]', () => {
 
 	fit('should throw an error if path in parent didn\'t find', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'div',
 				number: 2,
@@ -86,7 +86,7 @@ xdescribe('[Highlighter]', () => {
 
 	fit('should throw an error if parent didn\'t find', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'p',
 				number: 0,
@@ -105,7 +105,7 @@ xdescribe('[Highlighter]', () => {
 
 	it('should find textNode in child tag ', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'span',
 				number: 0,
@@ -125,7 +125,7 @@ xdescribe('[Highlighter]', () => {
 
 	it('should find textNode if there is several the same parents', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'span',
 				number: 0,
@@ -145,7 +145,7 @@ xdescribe('[Highlighter]', () => {
 
 	it('should find textNode in nested parent parent tag', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'p',
 				number: 0,
@@ -161,7 +161,7 @@ xdescribe('[Highlighter]', () => {
 
 	it('should find textNode in nested child element', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'span',
 				number: 3,
@@ -185,7 +185,7 @@ xdescribe('[Highlighter]', () => {
 
 	it('should trigger an error if path doesn\'t find', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
 				parentTag: 'span',
 				number: 0,

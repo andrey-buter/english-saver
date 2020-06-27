@@ -1,5 +1,5 @@
-import { NodeNumberInParent, ChildNodePath } from "../../models/node-number-in-parent.model";
-import { NodePath, NodePath2 } from "../../models/node-path.model";
+import { ChildNodePath } from "../../models/node-number-in-parent.model";
+import { NodePath } from "../../models/node-path.model";
 
 export class NodeCssPath {
 	#blockTags = /^(div|li|p|body)$/ ; // start with (^) + end on ($)
@@ -14,22 +14,6 @@ export class NodeCssPath {
 	// parent selector
 
 	getPath(node: Node): NodePath {
-		const pathInFirstParent = this.getNumbersInParentsNodesUntilBlockTag(node);
-		const innerElements = pathInFirstParent.length - 1;
-		const cssParentSelector = this.getParentCssSelector(node, innerElements + this.#cssSelectorDepth);
-
-		const cssAncestorsArray = cssParentSelector.split(this.#cssSelectorsDivider);
-		const selectors = cssAncestorsArray
-			.slice(0, cssAncestorsArray.length - innerElements)
-			.join(this.#cssSelectorsDivider);
-
-		return {
-			pathInParent: pathInFirstParent,
-			cssParentSelector: selectors
-		}
-	}
-
-	getPath2(node: Node): NodePath2 {
 		const childrenNodesPaths = this.getChildrenNodesPaths(node);
 		const innerElements = childrenNodesPaths.length - 1; // minus #text
 		const cssParentSelector = this.getParentCssSelector(node, innerElements + this.#cssSelectorDepth);
@@ -43,28 +27,6 @@ export class NodeCssPath {
 			childrenNodesPaths,
 			cssParentSelector: selectors
 		}
-	}
-
-	private getNumbersInParentsNodesUntilBlockTag(originNode: Node, limit = this.#nonBlockTagsLimit): NodeNumberInParent[] {
-		let node = originNode;
-		let result = [];
-
-		while (true) {
-			result.push(this.getNumberNodeInParent(node));
-			limit--;
-
-			if (this.isParentBlockTag(node)) {
-				break;
-			}
-
-			if (0 === limit) {
-				throw new Error(`[NodeCssPath.getNumbersInParentsNodesUntilBlockTag] There isn't block tags in ${limit} ancestors`);
-			}
-
-			node = this.getParentElement(node);
-		}
-
-		return result;
 	}
 
 	private getChildrenNodesPaths(originNode: Node, limit = this.#nonBlockTagsLimit): ChildNodePath[] {
@@ -110,25 +72,6 @@ export class NodeCssPath {
 		}
 	}
 
-	private getNumberNodeInParent(originNode: Node): NodeNumberInParent {
-		let counter = 0;
-		let node = originNode;
-
-		while(true) {
-			if (!node.previousSibling) {
-				break;
-			}
-
-			node = node.previousSibling;
-			counter++;
-		}
-
-		return {
-			parentTag: this.getParentElement(originNode).tagName.toLowerCase(),
-			number: counter
-		}
-	}
-
 	private getParentCssSelector(node: Node, depth = this.#cssSelectorDepth, cssSelectors: string[] = []): string {
 		const parent = this.getParentElement(node);
 		const selector = this.getElementCssSelector(parent);
@@ -156,9 +99,9 @@ export class NodeCssPath {
 		return this.#blockTags.test(node.nodeName.toLowerCase() || 'noop');
 	}
 
-	private isParentBlockTag(textNode: Node) {
-		return this.#blockTags.test(this.getParentElement(textNode).tagName.toLowerCase() || 'noop');
-	}
+	// private isParentBlockTag(textNode: Node) {
+	// 	return this.#blockTags.test(this.getParentElement(textNode).tagName.toLowerCase() || 'noop');
+	// }
 
 	private getElementCssSelector(element: HTMLElement): string {
 		return this.getElementIdCssSelector(element) || this.getElementClassCssSelector(element) || element.tagName.toLowerCase();

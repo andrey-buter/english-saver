@@ -1,4 +1,4 @@
-import { NodeNumberInParent } from "../../models/node-number-in-parent.model";
+import { ChildNodePath } from "../../models/node-number-in-parent.model";
 
 export class Highlighter {
 	constructor() {
@@ -18,7 +18,7 @@ export class Highlighter {
 
 	}
 
-	findNodes(lookedForText: string, selector: NodeNumberInParent, index: number, parentElement: Element) {
+	findNodes(lookedForText: string, selector: ChildNodePath, index: number, parentElement: Element) {
 		let results: Node[] = [];
 		const elements = parentElement.querySelectorAll(selector.parentTag);
 		const nodeNumber = selector.number;
@@ -58,7 +58,7 @@ export class Highlighter {
 		return results;
 	}
 
-	findNodesWithSelection(lookedForText: string, path: NodeNumberInParent[]): Node[] {
+	findNodesWithSelection(lookedForText: string, path: ChildNodePath[]): Node[] {
 		let results: Node[] = [];
 		const key = 0;
 		const parentElement = document;
@@ -107,7 +107,7 @@ export class Highlighter {
 		return nodes.map((node) => node?.textContent);
 	}
 
-	findTextNodes2(lookedForText: string, path: NodeNumberInParent[]) {
+	findTextNodes2(lookedForText: string, path: ChildNodePath[]) {
 		return path.reverse().map((selector, key) => {
 			let results = [];
 			const elements = document.querySelectorAll(selector.parentTag);
