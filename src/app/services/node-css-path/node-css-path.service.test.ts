@@ -1,6 +1,7 @@
 import { NodeCssPath } from "./node-css-path.service";
-import { NodeNumberInParent } from "../../models/node-number-in-parent.model";
+import { NodeNumberInParent, ChildNodePath } from "../../models/node-number-in-parent.model";
 import { NodePathPageObject } from "./node-css-path.service.po";
+import { NodePath2 } from "../../models/node-path.model";
 
 describe('Test class NodeCssPath', () => {
 	const text = 'Some interesting text';
@@ -200,47 +201,48 @@ describe('Test class NodeCssPath', () => {
 		expect(result).toBe(`#${id} .${className}`);
 	});
 
-	it('should return node number in parent if parent has single text node', () => {
+	it('should return child node path if parent has single text node', () => {
 		const div = document.createElement('div');
 		div.textContent = 'Single node';
 
 		// @ts-ignore
-		const result = nodePath.getNumberNodeInParent(div.childNodes[0]);
+		const result = nodePath.getChildPath(div.childNodes[0]);
 
 		expect(result).toEqual({
-			parentTag: 'div',
-			number: 0
-		} as NodeNumberInParent);
+			nodeName: '#text',
+			index: 0
+		} as ChildNodePath);
 	});
 
-	it('should return node number in parent if parent has several nodes', () => {
+	it('should return child node path if parent has several nodes', () => {
 		const div = document.createElement('div');
 		div.innerHTML = '0 node <span>1st node</span> 2d node';
 
 		// @ts-ignore
-		const result = nodePath.getNumberNodeInParent(div.childNodes[2]);
+		const result = nodePath.getChildPath(div.childNodes[2]);
 
 		expect(result).toEqual({
-			parentTag: 'div',
-			number: 2
-		} as NodeNumberInParent);
+			nodeName: '#text',
+			index: 2
+		} as ChildNodePath);
 	});
 
-	it('should return parents node counters data in div with single text node', () => {
-		const div = po.getDiv();
+	it('should return children nodes paths in div with single text node', () => {
+		const div = document.createElement('div');
+		div.textContent = 'Selection';
 
 		// @ts-ignore
-		const result = nodePath.getNumbersInParentsNodesUntilBlockTag(div.childNodes[0]);
+		const result = nodePath.getChildrenNodesPaths(div.childNodes[0]);
 
 		expect(result).toEqual([
 			{
-				parentTag: 'div',
-				number: 0
+				nodeName: '#text',
+				index: 0
 			}
-		] as NodeNumberInParent[]);
+		] as ChildNodePath[]);
 	});
 
-	it('should throw error if a text node has NON block tag parents', () => {
+	it('should throw error if a text node has not parents block tag', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `
@@ -261,14 +263,14 @@ describe('Test class NodeCssPath', () => {
 
 		if (textNode) {
 			// @ts-ignore
-			result = nodePath.getNumbersInParentsNodesUntilBlockTag.bind(nodePath, textNode, 4);
+			result = nodePath.getChildrenNodesPaths.bind(nodePath, textNode, 4);
 		}
 
 		// see https://stackoverflow.com/questions/46042613/how-to-test-type-of-thrown-exception-in-jest
 		expect(result).toThrow(Error);
 	});
 
-	it('should return parents node counters data if text node has 2 parents: div > span', () => {
+	it('should return children nodes paths if text node has 2 parents: div > span', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `<div><span ${tagName}>some text</span></div>`;
@@ -279,22 +281,22 @@ describe('Test class NodeCssPath', () => {
 
 		if (textNode) {
 			// @ts-ignore
-			result = nodePath.getNumbersInParentsNodesUntilBlockTag(textNode);
+			result = nodePath.getChildrenNodesPaths(textNode);
 		}
 
 		expect(result).toEqual([
 			{
-				parentTag: 'span',
-				number: 0
+				nodeName: '#text',
+				index: 0
 			},
 			{
-				parentTag: 'div',
-				number: 0
+				nodeName: 'span',
+				index: 0
 			}
-		] as NodeNumberInParent[]);
+		] as ChildNodePath[]);
 	});
 
-	it('should return parents node counters data if text node has 2 parents: div > p', () => {
+	it('should return children nodes paths if text node has <p> parent in path div > p', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `<div><p ${tagName}>some text</p></div>`;
@@ -305,18 +307,18 @@ describe('Test class NodeCssPath', () => {
 
 		if (textNode) {
 			// @ts-ignore
-			result = nodePath.getNumbersInParentsNodesUntilBlockTag(textNode);
+			result = nodePath.getChildrenNodesPaths(textNode);
 		}
 
 		expect(result).toEqual([
 			{
-				parentTag: 'p',
-				number: 0
+				nodeName: '#text',
+				index: 0
 			},
-		] as NodeNumberInParent[]);
+		] as ChildNodePath[]);
 	});
 
-	it('should return parents node counters data if text node has 3 parents: div > b > span', () => {
+	it('should return children nodes paths if text node has 3 parents: div > b > span', () => {
 		const tagName = 'textTag';
 
 		document.body.innerHTML = `
@@ -338,23 +340,23 @@ describe('Test class NodeCssPath', () => {
 
 		if (textNode) {
 			// @ts-ignore
-			result = nodePath.getNumbersInParentsNodesUntilBlockTag(textNode);
+			result = nodePath.getChildrenNodesPaths(textNode);
 		}
 
 		expect(result).toEqual([
 			{
-				parentTag: 'span',
-				number: 0
+				nodeName: '#text',
+				index: 0
 			},
 			{
-				parentTag: 'b',
-				number: 1
+				nodeName: 'span',
+				index: 1
 			},
 			{
-				parentTag: 'div',
-				number: 3
+				nodeName: 'b',
+				index: 3
 			},
-		] as NodeNumberInParent[]);
+		] as ChildNodePath[]);
 	});
 
 	it('should return node path data', () => {
@@ -380,32 +382,32 @@ describe('Test class NodeCssPath', () => {
 
 		const textNode = document.querySelector('[textTag]')?.childNodes[0];
 
-		let result;
+		let result: NodePath2 | null = null;
 
 		if (textNode) {
-			result = nodePath.getPath(textNode);
+			result = nodePath.getPath2(textNode);
 		}
 
 		expect(result).toEqual({
-			pathInParent: [
+			childrenNodesPaths: [
 				{
-					parentTag: 'span',
-					number: 0
+					nodeName: '#text',
+					index: 0
 				},
 				{
-					parentTag: 'b',
-					number: 1
+					nodeName: 'span',
+					index: 1
 				},
 				{
-					parentTag: 'p',
-					number: 3
+					nodeName: 'b',
+					index: 3
 				},
 			],
 			cssParentSelector: '.class div p'
-		});
+		} as NodePath2);
 	});
 
-	it('should return node path data', () => {
+	it('should return node path data if parent <html>', () => {
 		const tagName = 'textTag';
 
 		document.children[0].innerHTML = `
@@ -417,20 +419,20 @@ describe('Test class NodeCssPath', () => {
 
 		const textNode = document.querySelector('[textTag]')?.childNodes[0];
 
-		let result;
+		let result: NodePath2 | null = null;
 
 		if (textNode) {
-			result = nodePath.getPath(textNode);
+			result = nodePath.getPath2(textNode);
 		}
 
 		expect(result).toEqual({
-			pathInParent: [
+			childrenNodesPaths: [
 				{
-					parentTag: 'div',
-					number: 0,
+					nodeName: '#text',
+					index: 0,
 				}
 			],
 			cssParentSelector: 'html body div',
-		});
+		} as NodePath2);
 	});
 });
