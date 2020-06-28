@@ -1,58 +1,76 @@
-import { NodeNumberInParent } from "../../models/node-number-in-parent.model";
+import { ChildNodePath } from "../../models/node-number-in-parent.model";
+import { NodePath } from "../../models/node-path.model";
 
 export class Highlighter {
-	constructor() {
+	highlight(startPath: NodePath, endPath: NodePath) {
+		const startNodes = this.queryTextNodes(startPath.cssParentSelector, startPath.childrenNodesPaths);
+		const endNodes = this.queryTextNodes(endPath.cssParentSelector, endPath.childrenNodesPaths);
 
-	}
+		if (startNodes.length !== endNodes.length) {
+			console.warn('[Highlighter.highlight] startNodes.length !== endNodes.length');
+		}
 
-	select() {
+		startNodes.forEach((startNode, key) => {
+			const endNode = endNodes[key];
 
-	}
-
-	queryNodes(selector: string): NodeListOf<Element> {
-		return document.querySelectorAll(selector);
-	}
-
-	findSelectedRange() {
-		const elements = this.queryNodes(selector);
-
-	}
-
-	findTextNode(path: NodeNumberInParent[]) {
-		path.reverse().forEach((selector, key) => {
-			let results = [];
-			const elements = document.querySelectorAll(selector.parentTag);
-			const number = selector.number;
-			const index = path.length - key - 1;
-
-			if (!elements.length) {
-				throw new Error(`[Highlighter.findTextNode] Selector doesn't exist: ${JSON.stringify(selector)}`);
+			if (!startNode) {
+				return;
 			}
 
-			elements.forEach((element) => {
-				// if element has less children than selector in path
-				if (element.childNodes.length < number) {
-					return;
-				}
-
-				const child = element.childNodes[number];
-
-				// skip text nodes
-				if (index !== 0 && Node.TEXT_NODE === child.nodeType) {
-					return;
-				}
-
-				results.push(child);
-			});
-
-			if (!results.length) {
-				throw new Error(`[Highlighter.findTextNode] Selector doesn't have a child with index: ${JSON.stringify(selector)}`);
+			if (!endNode) {
+				return;
 			}
 
-			// я сделал проход только по верхнему родителю
-			// у нас есть results с children elements,
-			// и теперь в каждом элементе!!! нужно делалть такой же поиск
-			// dthjznyj ghbltncz xnj-nj vytnmz d aeyrwbb
+			if (!startPath.offset) {
+				console.warn('[Highlighter.highlight] startPath.offset is undefined');
+				return;
+			}
+
+			if (!endPath.offset) {
+				console.warn('[Highlighter.highlight] endPath.offset is undefined');
+				return;
+			}
+
+			const range = new Range();
+
+			range.setStart(startNode, startPath.offset);
+			range.setEnd(endNode, endPath.offset);
+			range.surroundContents(this.getWrapper());
+			window?.getSelection()?.removeAllRanges();
 		});
+	}
+
+	private getWrapper() {
+		const span = document.createElement('span');
+		span.style.backgroundColor = 'blue';
+
+		return span;
+	}
+
+	private queryTextNodes(parentCssSelector: string, childrenPaths: ChildNodePath[]) {
+		const parents = Array.from(document.querySelectorAll(parentCssSelector));
+
+		return parents.map((parent) => this.findChildrenNodesWithSelection(parent, childrenPaths));
+	}
+
+	private findChildrenNodesWithSelection(parentElement: Node, originPaths: ChildNodePath[]): Node | null {
+		const paths = [...originPaths];
+		const selector = paths.shift();
+
+		if (!selector) {
+			return parentElement;
+		}
+
+		const node = parentElement.childNodes[selector.index];
+
+		if (!node) {
+			return null;
+		}
+
+		if (selector.nodeName !== node.nodeName.toLowerCase()) {
+			return null;
+		}
+
+		return this.findChildrenNodesWithSelection(node, paths);
 	}
 }

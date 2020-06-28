@@ -1,8 +1,10 @@
-import { NodeNumberInParent } from "../../models/node-number-in-parent.model";
+import { ChildNodePath } from "../../models/node-number-in-parent.model";
 import { Highlighter } from "./highlighter.service";
+import { HighlighterPO } from "./highlighter.po";
 
 describe('[Highlighter]', () => {
 	let highlighter: Highlighter;
+	const po = new HighlighterPO();
 
 	beforeAll(() => {
 		highlighter = new Highlighter();
@@ -10,141 +12,101 @@ describe('[Highlighter]', () => {
 
 	it('should find textNode in parent tag with single text node', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const paths: ChildNodePath[] = [
 			{
-				parentTag: 'div',
-				number: 0,
+				nodeName: '#text',
+				index: 0,
 			},
 		];
+		const div = po.createDiv(`${text}<span>some text</span>`);
 
-		document.body.innerHTML = `<div>${text}<span>some text</span></div>`;
+		// @ts-ignore
+		const result = highlighter.findChildrenNodesWithSelection(div, paths);
 
-		const result = highlighter.findTextNode(path);
-
-		expect(result).toBe(text);
+		expect(result?.textContent).toBe(text);
 	});
 
-	it('should find textNode in parent tag with single text node', () => {
+	it('should return NULL if there was not found a child', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
-				parentTag: 'div',
-				number: 2,
+				nodeName: 'span',
+				index: 100,
+			},
+			{
+				nodeName: '#text',
+				index: 0,
 			},
 		];
 
-		document.body.innerHTML = `<div>Some text<span>some text</span>${text}</div>`;
+		const div = po.createDiv(`<span>${text}</span>`);
 
+		// @ts-ignore
+		const result = highlighter.findChildrenNodesWithSelection(div, path);
 
-		const result = highlighter.findTextNode(path);
+		expect(result).toBe(null);
+	});
 
-		expect(result).toBe(text);
+	it('should return NULL if there was found incorrect child', () => {
+		const text = 'Selection';
+		const path: ChildNodePath[] = [
+			{
+				nodeName: '#text',
+				index: 0,
+			},
+		];
+
+		const div = po.createDiv(`<span>First</span>${text}`);
+
+		// @ts-ignore
+		const result = highlighter.findChildrenNodesWithSelection(div, path);
+
+		expect(result).toBe(null);
 	});
 
 	it('should find textNode in child tag ', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
-				parentTag: 'span',
-				number: 3,
+				nodeName: 'span',
+				index: 3,
 			},
 			{
-				parentTag: 'div',
-				number: 0,
-			},
-		];
-
-		document.body.innerHTML = `<div>Some text<span>some text</span>other text <span>${text}</span></div>`;
-
-		const result = highlighter.findTextNode(path);
-
-		expect(result).toBe(text);
-	});
-
-	it('should find textNode if there is several the same parents', () => {
-		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
-			{
-				parentTag: 'span',
-				number: 0,
-			},
-			{
-				parentTag: 'div',
-				number: 0,
+				nodeName: '#text',
+				index: 0,
 			},
 		];
 
-		document.body.innerHTML = `<div>some text</div><div><span>${text}</span></div>`;
+		const div = po.createDiv(`Some text<span>some text</span>other text <span>${text}</span>`);
 
-		const result = highlighter.findTextNode(path);
+		// @ts-ignore
+		const result = highlighter.findChildrenNodesWithSelection(div, path);
 
-		expect(result).toBe(text);
-	});
-
-	it('should find textNode in nested parent parent tag', () => {
-		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
-			{
-				parentTag: 'p',
-				number: 0,
-			},
-		];
-
-		document.body.innerHTML = `<div><p>${text}<span>some text</span></p></div>`;
-
-		const result = highlighter.findTextNode(path);
-
-		expect(result).toBe(text);
+		expect(result?.textContent).toBe(text);
 	});
 
 	it('should find textNode in nested child element', () => {
 		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
+		const path: ChildNodePath[] = [
 			{
-				parentTag: 'span',
-				number: 3,
+				nodeName: 'b',
+				index: 1,
 			},
 			{
-				parentTag: 'b',
-				number: 1,
+				nodeName: 'span',
+				index: 1,
 			},
 			{
-				parentTag: 'div',
-				number: 0,
-			},
-		];
-
-		document.body.innerHTML = `<div>some text<b>inner text<span>${text}</span></b></div>`;
-
-		const result = highlighter.findTextNode(path);
-
-		expect(result).toBe(text);
-	});
-
-	it('should trigger an error if path doesn\'t find', () => {
-		const text = 'Selection';
-		const path: NodeNumberInParent[] = [
-			{
-				parentTag: 'span',
-				number: 0,
-			},
-			{
-				parentTag: 'b',
-				number: 1,
-			},
-			{
-				parentTag: 'div',
-				number: 3,
+				nodeName: '#text',
+				index: 0,
 			},
 		];
 
-		document.body.innerHTML = `<div>some text<b>inner text</b></div>`;
+		const div = po.createDiv(`some text<b>inner text<span>${text}</span></b>`);
 
-		const result = highlighter.findTextNode.bind(highlighter, path);
+		// @ts-ignore
+		const result = highlighter.findChildrenNodesWithSelection(div, path);
 
-		//should be error
-		expect(result).toThrow(Error);
+		expect(result?.textContent).toBe(text);
 	});
-
-
 });

@@ -1,7 +1,7 @@
-import { NodeNumberInParent } from "./node-number-in-parent.model";
+import { ChildNodePath } from "./node-number-in-parent.model";
 
 export interface NodePath {
-	pathInParent: NodeNumberInParent[];
+	childrenNodesPaths: ChildNodePath[];
 	cssParentSelector: string;
 	offset?: number;
 }
