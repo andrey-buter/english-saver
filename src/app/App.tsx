@@ -6,6 +6,7 @@ import { DataSaverService } from './services/saver/saver.service';
 import { LocalDatabaseService } from './services/local-db/local-db.service';
 import { SelectionToast } from "./components/SelectionToast/SelectionToast";
 import { SelectionHandler } from "./services/selection-handler/selection-handler.service";
+import { Highlighter } from "./services/highlighter/highlighter.service";
 
 // import '../styles/App.css';
 
@@ -14,6 +15,7 @@ const localDb = new LocalDatabaseService();
 
 const saver = new DataSaverService(localDb, remoteDb);
 const selectionHandler = new SelectionHandler();
+const highlighter = new Highlighter()
 
 interface State {
 	words: Word[];
@@ -67,6 +69,7 @@ export default class App extends Component<{}, State> {
 				});
 
 				this.cancel();
+				highlighter.highlight(word.startRange, word.endRange);
 			});
 
 		// do highlight
@@ -85,6 +88,10 @@ export default class App extends Component<{}, State> {
 			debugger
 			this.setState({
 				words: data
+			});
+
+			data.forEach((word) => {
+				highlighter.highlight(word.startRange, word.endRange);
 			})
 		});
 	}

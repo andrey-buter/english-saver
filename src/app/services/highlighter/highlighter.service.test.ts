@@ -20,7 +20,7 @@ describe('[Highlighter]', () => {
 		];
 		const div = po.createDiv(`${text}<span>some text</span>`);
 
-		// @ts-expect-error
+		// @ts-ignore
 		const result = highlighter.findChildrenNodesWithSelection(div, paths);
 
 		expect(result?.textContent).toBe(text);
@@ -41,7 +41,7 @@ describe('[Highlighter]', () => {
 
 		const div = po.createDiv(`<span>${text}</span>`);
 
-		// @ts-expect-error
+		// @ts-ignore
 		const result = highlighter.findChildrenNodesWithSelection(div, path);
 
 		expect(result).toBe(null);
@@ -58,7 +58,7 @@ describe('[Highlighter]', () => {
 
 		const div = po.createDiv(`<span>First</span>${text}`);
 
-		// @ts-expect-error
+		// @ts-ignore
 		const result = highlighter.findChildrenNodesWithSelection(div, path);
 
 		expect(result).toBe(null);
@@ -79,7 +79,7 @@ describe('[Highlighter]', () => {
 
 		const div = po.createDiv(`Some text<span>some text</span>other text <span>${text}</span>`);
 
-		// @ts-expect-error
+		// @ts-ignore
 		const result = highlighter.findChildrenNodesWithSelection(div, path);
 
 		expect(result?.textContent).toBe(text);
@@ -104,7 +104,7 @@ describe('[Highlighter]', () => {
 
 		const div = po.createDiv(`some text<b>inner text<span>${text}</span></b>`);
 
-		// @ts-expect-error
+		// @ts-ignore
 		const result = highlighter.findChildrenNodesWithSelection(div, path);
 
 		expect(result?.textContent).toBe(text);

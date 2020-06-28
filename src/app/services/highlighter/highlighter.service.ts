@@ -35,7 +35,16 @@ export class Highlighter {
 
 			range.setStart(startNode, startPath.offset);
 			range.setEnd(endNode, endPath.offset);
+			range.surroundContents(this.getWrapper());
+			window?.getSelection()?.removeAllRanges();
 		});
+	}
+
+	private getWrapper() {
+		const span = document.createElement('span');
+		span.style.backgroundColor = 'blue';
+
+		return span;
 	}
 
 	private queryTextNodes(parentCssSelector: string, childrenPaths: ChildNodePath[]) {
