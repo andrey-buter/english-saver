@@ -33,6 +33,11 @@ export class Highlighter {
 
 			const range = new Range();
 
+			// есть ошибка со словами, которые должны выделиться, когда они стоят после УЖЕ выделенного слова
+			// if ((startNode.nodeValue?.length || 0) < startPath.offset) {
+			// 	return;
+			// }
+
 			range.setStart(startNode, startPath.offset);
 			range.setEnd(endNode, endPath.offset);
 			range.surroundContents(this.getWrapper());

@@ -91,6 +91,7 @@ export default class App extends Component<{}, State> {
 			});
 
 			data.forEach((word) => {
+				debugger
 				highlighter.highlight(word.startRange, word.endRange);
 			})
 		});
