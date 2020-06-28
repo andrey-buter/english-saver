@@ -48,7 +48,7 @@ export class NodeCssPath {
 			node = this.getParentElement(node);
 		}
 
-		return result;
+		return result.reverse();
 	}
 
 	private getChildPath(childNode: Node): ChildNodePath {
@@ -117,8 +117,8 @@ export class NodeCssPath {
 		return classes ? `.${classes.split(' ').join('.')}` : null;
 	}
 
-	// selector[0] - child
-	// selector[1] - parent
+	// selector[0] - parent
+	// selector[1] - child
 	// expected queue: 'parent > child'
 	private getHierarchyCssSelector(selectors: string[]): string {
 		return selectors.reverse().join(this.#cssSelectorsDivider);

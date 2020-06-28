@@ -1,149 +1,67 @@
 import { ChildNodePath } from "../../models/node-number-in-parent.model";
+import { NodePath } from "../../models/node-path.model";
 
 export class Highlighter {
-	constructor() {
+	highlight(startPath: NodePath, endPath: NodePath) {
+		const startNodes = this.queryTextNodes(startPath.cssParentSelector, startPath.childrenNodesPaths);
+		const endNodes = this.queryTextNodes(endPath.cssParentSelector, endPath.childrenNodesPaths);
 
-	}
-
-	select() {
-
-	}
-
-	queryNodes(selector: string): NodeListOf<Element> {
-		return document.querySelectorAll(selector);
-	}
-
-	findSelectedRange() {
-		const elements = this.queryNodes(selector);
-
-	}
-
-	findNodes(lookedForText: string, selector: ChildNodePath, index: number, parentElement: Element) {
-		let results: Node[] = [];
-		const elements = parentElement.querySelectorAll(selector.parentTag);
-		const nodeNumber = selector.number;
-
-		if (!elements.length) {
-			throw new Error(`[Highlighter.findTextNode] Selector doesn't exist: ${JSON.stringify(selector)}`);
+		if (startNodes.length !== endNodes.length) {
+			console.warn('[Highlighter.highlight] startNodes.length !== endNodes.length');
 		}
 
-		elements.forEach((element) => {
-			// if element has less children than selector in path
-			if (element.childNodes.length < nodeNumber) {
+		startNodes.forEach((startNode, key) => {
+			const endNode = endNodes[key];
+
+			if (!startNode) {
 				return;
 			}
 
-			const lookedForNode = element.childNodes[nodeNumber];
-
-			if (!lookedForNode) {
+			if (!endNode) {
 				return;
 			}
 
-			if (!lookedForNode.textContent?.includes(lookedForText)) {
+			if (!startPath.offset) {
+				console.warn('[Highlighter.highlight] startPath.offset is undefined');
 				return;
 			}
 
-			// skip text nodes
-			if (Node.TEXT_NODE === lookedForNode.nodeType && index !== 0) {
+			if (!endPath.offset) {
+				console.warn('[Highlighter.highlight] endPath.offset is undefined');
 				return;
 			}
 
-			results.push(lookedForNode);
+			const range = new Range();
+
+			range.setStart(startNode, startPath.offset);
+			range.setEnd(endNode, endPath.offset);
 		});
-
-		if (!results.length) {
-			throw new Error(`[Highlighter.findTextNode] Selector doesn't have a child with index: ${JSON.stringify(selector)}`);
-		}
-
-		return results;
 	}
 
-	findNodesWithSelection(lookedForText: string, path: ChildNodePath[]): Node[] {
-		let results: Node[] = [];
-		const key = 0;
-		const parentElement = document;
-		const index = path.length - key - 1;
-		
-		const selector = path[key];
-		const elements = parentElement.querySelectorAll(selector.parentTag);
-		const nodeNumber = selector.number;
+	private queryTextNodes(parentCssSelector: string, childrenPaths: ChildNodePath[]) {
+		const parents = Array.from(document.querySelectorAll(parentCssSelector));
 
-		if (!elements.length) {
-			throw new Error(`[Highlighter.findTextNode] Selector doesn't exist: ${JSON.stringify(selector)}`);
-		}
-
-		elements.forEach((element) => {
-			// if element has less children than selector in path
-			if (element.childNodes.length < nodeNumber) {
-				return;
-			}
-
-			const lookedForNode = element.childNodes[nodeNumber];
-
-			if (!lookedForNode) {
-				return;
-			}
-
-			if (!lookedForNode.textContent?.includes(lookedForText)) {
-				return;
-			}
-
-			// skip text nodes
-			// if (index !== 0 && Node.TEXT_NODE === lookedForNode.nodeType) {
-			// 	return;
-			// }
-
-			results.push(lookedForNode);
-		});
-
-		if (!results.length) {
-			throw new Error(`[Highlighter.findTextNode] Selector doesn't have a child with index: ${JSON.stringify(selector)}`);
-		}
-
-		return results;
+		return parents.map((parent) => this.findChildrenNodesWithSelection(parent, childrenPaths));
 	}
 
-	_getFoundNodesText(nodes: Node[]): Array<string | null> {
-		return nodes.map((node) => node?.textContent);
-	}
+	private findChildrenNodesWithSelection(parentElement: Node, originPaths: ChildNodePath[]): Node | null {
+		const paths = [...originPaths];
+		const selector = paths.shift();
 
-	findTextNodes2(lookedForText: string, path: ChildNodePath[]) {
-		return path.reverse().map((selector, key) => {
-			let results = [];
-			const elements = document.querySelectorAll(selector.parentTag);
-			const number = selector.number;
-			const index = path.length - key - 1;
+		if (!selector) {
+			return parentElement;
+		}
 
-			if (!elements.length) {
-				throw new Error(`[Highlighter.findTextNode] Selector doesn't exist: ${JSON.stringify(selector)}`);
-			}
+		const node = parentElement.childNodes[selector.index];
 
-			elements.forEach((element) => {
-				// if element has less children than selector in path
-				if (element.childNodes.length < number) {
-					return;
-				}
+		if (!node) {
+			return null;
+		}
 
-				const child = element.childNodes[number];
+		if (selector.nodeName !== node.nodeName.toLowerCase()) {
+			return null;
+		}
 
-				// skip text nodes
-				if (index !== 0 && Node.TEXT_NODE === child.nodeType) {
-					return;
-				}
-
-				results.push(child);
-			});
-
-			if (!results.length) {
-				throw new Error(`[Highlighter.findTextNode] Selector doesn't have a child with index: ${JSON.stringify(selector)}`);
-			}
-
-			return results;
-
-			// я сделал проход только по верхнему родителю
-			// у нас есть results с children elements,
-			// и теперь в каждом элементе!!! нужно делалть такой же поиск
-			// вероятно придется что-то мнетья в функции
-		});
+		return this.findChildrenNodesWithSelection(node, paths);
 	}
 }

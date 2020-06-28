@@ -282,13 +282,13 @@ describe('Test class NodeCssPath', () => {
 
 		expect(result).toEqual([
 			{
-				nodeName: '#text',
+				nodeName: 'span',
 				index: 0
 			},
 			{
-				nodeName: 'span',
+				nodeName: '#text',
 				index: 0
-			}
+			},
 		] as ChildNodePath[]);
 	});
 
@@ -341,16 +341,16 @@ describe('Test class NodeCssPath', () => {
 
 		expect(result).toEqual([
 			{
-				nodeName: '#text',
-				index: 0
+				nodeName: 'b',
+				index: 3
 			},
 			{
 				nodeName: 'span',
 				index: 1
 			},
 			{
-				nodeName: 'b',
-				index: 3
+				nodeName: '#text',
+				index: 0
 			},
 		] as ChildNodePath[]);
 	});
@@ -387,16 +387,16 @@ describe('Test class NodeCssPath', () => {
 		expect(result).toEqual({
 			childrenNodesPaths: [
 				{
-					nodeName: '#text',
-					index: 0
+					nodeName: 'b',
+					index: 3
 				},
 				{
 					nodeName: 'span',
 					index: 1
 				},
 				{
-					nodeName: 'b',
-					index: 3
+					nodeName: '#text',
+					index: 0
 				},
 			],
 			cssParentSelector: '.class div p'
