@@ -7,6 +7,8 @@ export class SelectionHandler {
 	#selectionTimeout: number | undefined;
 	#runOnSelect = (wordData: Word): void => {}
 
+	private selection: SelectWord | undefined;
+
 	constructor() {
 		document.addEventListener('selectionchange', () => {
 			this.handleEvent()
@@ -24,11 +26,12 @@ export class SelectionHandler {
 			return;
 		}
 
-		// const cls = selection.focusNode?.className;
+		const range = selection.getRangeAt(0);
 
-		//     if ('jfk-bubble-content-id' !== cls) {
-		//         return;
-		//     }
+		if (!(range.commonAncestorContainer as Element).classList?.contains('jfk-bubble-content-id')) {
+			this.selection = new SelectWord(selection.toString(), range);
+			return;
+		}
 
 		if (this.#selectionTimeout) {
 			clearTimeout(this.#selectionTimeout);
@@ -39,17 +42,16 @@ export class SelectionHandler {
 		// ! They have different declaration of setTimeout
 		// ! Check branch jest-1!
 		// @ts-ignore
-		this.#selectionTimeout = setTimeout(() => {
-			const selectedWord = new SelectWord(selection);
+		// this.#selectionTimeout = setTimeout(() => {
+		if (this.selection) {
+			this.selection.addTranslation(selection.toString());
 
-			// highlighter = new Highlighter( selection );
-
-			// highlighter.doHighlight();
+			this.#runOnSelect(this.selection.getData());
+		}
 
 			// const sentence = engSelection.getSentence();
 			// const word = engSelection.getSelectionObject().word;
 
-			this.#runOnSelect(selectedWord.getData());
 
 			// if (saver.hasWord(word)) {
 			// 	list.highlightItem(word);
@@ -57,7 +59,7 @@ export class SelectionHandler {
 
 			// toast.context(sentence);
 			// toast.show();
-		}, 1000);
+		// }, 1000);
 	}
 
 	onSelect(callback: RunOnSelect) {

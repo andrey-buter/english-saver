@@ -45,6 +45,12 @@ export class LocalDatabaseService {
 		return JSON.parse(localStorage.getItem(this.#storageKey) ?? '{}');
 	}
 
+	public getWordById(id: string): Word | undefined {
+		const data = this.getData();
+
+		return data[id];
+	}
+
 	public hasWord(word: string) {
 		return this.#savedWords.includes(word);
 	}

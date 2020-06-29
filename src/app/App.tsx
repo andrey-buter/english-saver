@@ -36,6 +36,7 @@ export default class App extends Component<{}, State> {
 		this.initDb();
 		selectionHandler.onSelect((wordData: Word) => this.onSelectWord(wordData));
 	}
+
 	render() {
 		const { words, toast } = this.state;
 
@@ -69,10 +70,8 @@ export default class App extends Component<{}, State> {
 				});
 
 				this.cancel();
-				highlighter.highlight(word.startRange, word.endRange);
+				highlighter.highlight(word.id, word.startRange, word.endRange);
 			});
-
-		// do highlight
 	}
 
 	cancel = (): void => {
@@ -85,14 +84,12 @@ export default class App extends Component<{}, State> {
 
 	private initDb() {
 		saver.init().then((data) => {
-			debugger
 			this.setState({
 				words: data
 			});
 
 			data.forEach((word) => {
-				debugger
-				highlighter.highlight(word.startRange, word.endRange);
+				word?.id && highlighter.highlight(word.id, word.startRange, word.endRange);
 			})
 		});
 	}

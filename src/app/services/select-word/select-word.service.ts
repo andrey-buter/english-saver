@@ -10,25 +10,24 @@ import { Word } from "../../models/word.model";
 const nodepath = new NodeCssPath();
 
 export class SelectWord {
-	range: Range;
 	startOffset: number;
 	endOffset: number;
 	startContainer: Node;
 	endContainer: Node;
-	selection: string;
+	translation: string = '';
 
-	constructor(selection: Selection) {
-		this.range = selection.getRangeAt(0);
-
+	// TODO: format selection
+	constructor(private selection: string, private range: Range) {
 		const { startOffset, endOffset, startContainer, endContainer } = this.range;
 
 		this.startOffset = startOffset;
 		this.endOffset = endOffset;
 		this.startContainer = startContainer;
 		this.endContainer = endContainer;
+	}
 
-		// TODO: format selection
-		this.selection = selection.toString();
+	addTranslation(text: string) {
+		this.translation = text;
 	}
 
 	getData(): Word {
@@ -44,7 +43,7 @@ export class SelectWord {
 				...nodepath.getPath(this.endContainer),
 				offset: this.endOffset
 			},
-			translation: '',
+			translation: this.translation,
 			uri: window.location.href
 		}
 	}

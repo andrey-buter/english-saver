@@ -1,8 +1,9 @@
 import { ChildNodePath } from "../../models/node-number-in-parent.model";
 import { NodePath } from "../../models/node-path.model";
+import { Word } from "../../models/word.model";
 
 export class Highlighter {
-	highlight(startPath: NodePath, endPath: NodePath) {
+	highlight(id: string, startPath: NodePath, endPath: NodePath) {
 		const startNodes = this.queryTextNodes(startPath.cssParentSelector, startPath.childrenNodesPaths);
 		const endNodes = this.queryTextNodes(endPath.cssParentSelector, endPath.childrenNodesPaths);
 
@@ -42,8 +43,15 @@ export class Highlighter {
 			// что НЕ есть гуд.
 			// Возможно нужно как-то сохранять копию оригинального контента???
 			// Или при ручном добавлении нового выделения - делать пересчет
-			// А при загрузке контента - начинать с конца - или тоже делать пересчет, 
+			// А при загрузке контента - начинать с конца - или тоже делать пересчет,
 			// если будет работать одинаково
+			// ! Если начинать с чистой базы и добавлять новые слова,
+			// ! тогда следующие слова запоминают свою позицию с учетом уже подсвеченых слов.
+			// ! Соответственно ничего больше делать не нужно,
+			// ! т.к. слова записываются в базу в нужно порядке!!!
+			// ! НО! есть проблема при удалении, нужно будет пересчитвыать позицию для nextSiblings
+			// ! т.к. их начальная позиция изменится при удалении выделения.
+			//
 
 			// if ((startNode.nodeValue?.length || 0) < startPath.offset) {
 			// 	return;
@@ -51,14 +59,24 @@ export class Highlighter {
 
 			range.setStart(startNode, startPath.offset);
 			range.setEnd(endNode, endPath.offset);
-			range.surroundContents(this.getWrapper());
-			window?.getSelection()?.removeAllRanges();
+
+			// ! surroundContents() оборачивает только текстовые ноды.
+			// ! если выделение содержит несколько nodes, тогда метод выдает ошибку
+			// ! doesn't work - range.surroundContents(this.getWrapper());
+
+
+			// @see https://developer.mozilla.org/ru/docs/Web/API/Range/surroundContents
+			const newNode = this.getWrapper(id);
+			newNode.appendChild(range.extractContents());
+			range.insertNode(newNode)
 		});
 	}
 
-	private getWrapper() {
-		const span = document.createElement('span');
-		span.style.backgroundColor = 'blue';
+	private getWrapper(id: string) {
+		const span = document.createElement('eng-word');
+		// span.style.backgroundColor = '#ff9632';
+		span.id = id;
+		// span.classList.add('eng-saver__highlight');
 
 		return span;
 	}
