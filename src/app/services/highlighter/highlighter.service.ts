@@ -2,37 +2,80 @@ import { ChildNodePath } from "../../models/node-number-in-parent.model";
 import { NodePath } from "../../models/node-path.model";
 import { Word } from "../../models/word.model";
 
+interface ValidNode {
+	startNode: Node;
+	endNode: Node;
+}
+
+interface RangeNodeData {
+	node: Node;
+	offset: number;
+}
+
 export class Highlighter {
-	highlight(id: string, startPath: NodePath, endPath: NodePath) {
+	private getValidNodes(startPath: NodePath, endPath: NodePath): ValidNode[] | null {
 		const startNodes = this.queryTextNodes(startPath.cssParentSelector, startPath.childrenNodesPaths);
 		const endNodes = this.queryTextNodes(endPath.cssParentSelector, endPath.childrenNodesPaths);
 
 		if (startNodes.length !== endNodes.length) {
-			console.warn('[Highlighter.highlight] startNodes.length !== endNodes.length');
+			console.warn('[Highlighter.getValidNodes] startNodes.length !== endNodes.length');
+			return null;
 		}
 
-		startNodes.forEach((startNode, key) => {
-			const endNode = endNodes[key];
+		const results = startNodes
+			.map((startNode, key) => {
+				const endNode = endNodes[key];
 
-			if (!startNode) {
-				return;
-			}
+				if (!startNode) {
+					return;
+				}
 
-			if (!endNode) {
-				return;
-			}
+				if (!endNode) {
+					return;
+				}
 
+				return { startNode, endNode } as ValidNode;
+			})
+			.filter(Boolean);
+
+		return results as ValidNode[];
+	}
+
+	highlight(id: string, selection: string, startPath: NodePath, endPath: NodePath) {
+		const validNodes = this.getValidNodes(startPath, endPath);
+
+		if (!validNodes) {
+			return;
+		}
+
+
+		validNodes.forEach(({ startNode, endNode }) => {
+			// ts doesn't react on condition outside the loop
 			if (!startPath.offset) {
 				console.warn('[Highlighter.highlight] startPath.offset is undefined');
-				return;
+				return null;
 			}
 
 			if (!endPath.offset) {
 				console.warn('[Highlighter.highlight] endPath.offset is undefined');
+				return null;
+			}
+
+			if (startNode.nodeValue && startNode.nodeValue.length < startPath.offset) {
+				console.warn('[Highlighter.highlight] startOffest > nodeValue.length');
 				return;
 			}
 
-			const range = new Range();
+			const start: RangeNodeData = {
+				node: startNode,
+				offset: startPath.offset
+			};
+			const end: RangeNodeData = {
+				node: endNode,
+				// ts doesn't react on condition above about offset so I set unreal offset
+				offset: endPath.offset || 9999
+			};
+			const range = this._createRange(start, end);
 
 			// есть ошибка со словами, которые должны выделиться, когда они стоят после УЖЕ выделенного слова
 			// Один вариант решения - сортировать по одинаковым нодам и начинать выделение с конца,
@@ -57,9 +100,6 @@ export class Highlighter {
 			// 	return;
 			// }
 
-			range.setStart(startNode, startPath.offset);
-			range.setEnd(endNode, endPath.offset);
-
 			// ! surroundContents() оборачивает только текстовые ноды.
 			// ! если выделение содержит несколько nodes, тогда метод выдает ошибку
 			// ! doesn't work - range.surroundContents(this.getWrapper());
@@ -71,6 +111,19 @@ export class Highlighter {
 			range.insertNode(newNode)
 		});
 	}
+
+	_createRange(start: RangeNodeData, end: RangeNodeData): Range {
+		const range = new Range();
+
+		range.setStart(start.node, start.offset);
+		range.setEnd(end.node, end.offset);
+
+		return range;
+	}
+
+	// private matchRangeWithSelectedText(selection: string, range: Range): boolean {
+
+	// }
 
 	private getWrapper(id: string) {
 		const span = document.createElement('eng-word');

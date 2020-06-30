@@ -70,7 +70,7 @@ export default class App extends Component<{}, State> {
 				});
 
 				this.cancel();
-				highlighter.highlight(word.id, word.startRange, word.endRange);
+				highlighter.highlight(word.id, word.selection, word.startRange, word.endRange);
 			});
 	}
 
@@ -89,7 +89,7 @@ export default class App extends Component<{}, State> {
 			});
 
 			data.forEach((word) => {
-				word?.id && highlighter.highlight(word.id, word.startRange, word.endRange);
+				word?.id && highlighter.highlight(word.id, word.selection, word.startRange, word.endRange);
 			})
 		});
 	}
@@ -97,8 +97,10 @@ export default class App extends Component<{}, State> {
 	private onSelectWord(wordData: Word) {
 		this.word = wordData;
 
-		this.setState({
-			toast: wordData.selection
-		});
+		this.saveCloseToast();
+
+		// this.setState({
+		// 	toast: wordData.selection
+		// });
 	}
 }

@@ -8,7 +8,8 @@ module.exports = {
 	entry: './src/main.tsx',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'bundle-[hash].js',
+		filename: 'bundle.js',
+		// filename: 'bundle-[hash].js',
 	},
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js'],
@@ -17,6 +18,10 @@ module.exports = {
 		contentBase: 'dist',
 		compress: true,
 		port: 3000,
+	},
+	optimization: {
+		// chrome throw error about incorrect UTF-8 encoding in js file. Minification disabling resolves the issue.
+		minimize: false,
 	},
 	module: {
 		rules: [

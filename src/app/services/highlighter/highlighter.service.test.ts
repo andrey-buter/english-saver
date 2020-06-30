@@ -109,4 +109,28 @@ describe('[Highlighter]', () => {
 
 		expect(result?.textContent).toBe(text);
 	});
+
+	// it('should return ', () => {
+	// 	const start = 'Start';
+	// 	const end = 'End';
+	// 	const div = po.createDiv(`some text<b>${start}</b>some text<span>${end}</span>`);
+	// 	const startNode = div.querySelector('b')?.childNodes[0];
+	// 	const endNode = div.querySelector('span')?.childNodes[0];
+
+	// 	const range = highlighter._createRange(
+	// 		{
+	// 			node: startNode,
+	// 			offset: 0
+	// 		},
+	// 		{
+	// 			node: endNode,
+	// 			offset: end.length - 1
+	// 		}
+	// 	);
+
+	// 	document.body.appendChild()
+
+
+	// 	expect(result?.textContent).toBe(text);
+	// });
 });
