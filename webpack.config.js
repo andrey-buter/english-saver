@@ -3,11 +3,12 @@ const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
 	entry: './src/main.tsx',
 	output: {
-		path: path.resolve(__dirname, 'dist'),
+		path: path.resolve(__dirname, 'addon'),
 		filename: 'bundle.js',
 		// filename: 'bundle-[hash].js',
 	},
@@ -88,5 +89,15 @@ module.exports = {
 			filename: 'style-[hash].css',
 			allChunks: true,
 		}),
+		new CopyPlugin([
+				{
+					from: path.resolve(__dirname, 'src-addon/'),
+					to: path.resolve(__dirname, 'addon/'),
+					toType: 'dir'
+				}
+			// options: {
+			// 	concurrency: 100,
+			// },
+			]),
 	],
 };

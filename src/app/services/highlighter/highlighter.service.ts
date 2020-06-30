@@ -48,7 +48,6 @@ export class Highlighter {
 			return;
 		}
 
-
 		validNodes.forEach(({ startNode, endNode }) => {
 			// ts doesn't react on condition outside the loop
 			if (!startPath.offset) {
@@ -114,6 +113,8 @@ export class Highlighter {
 
 	_createRange(start: RangeNodeData, end: RangeNodeData): Range {
 		const range = new Range();
+
+		debugger
 
 		range.setStart(start.node, start.offset);
 		range.setEnd(end.node, end.offset);

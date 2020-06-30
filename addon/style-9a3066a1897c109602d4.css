@@ -1,0 +1,6 @@
+eng-word{position:relative;cursor:pointer}.eng-word__tooltip-translation{position:absolute;bottom:calc(100% + 3px);left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);background:yellow;color:#000;padding:4px;border-radius:2px;-webkit-box-shadow:0px 0px 3px 0px rgba(0, 0, 0, .75);box-shadow:0px 0px 3px 0px rgba(0, 0, 0, .75)}
+
+.eng-saver__words-list{position:fixed;bottom:100px;right:10px;z-index:1202;font-size:12px;max-width:300px}.eng-saver__words-list li{-webkit-box-shadow:rgba(0, 0, 0, .2) 0px 1px 3px;box-shadow:rgba(0, 0, 0, .2) 0px 1px 3px;border:1px solid #bbb;padding:5px;margin-bottom:5px;border-radius:3px}.eng-saver__words-list li.highlighted{border-color:red}
+
+.eng-saver__toast{position:fixed;z-index:1202;bottom:10px;right:10px;background:#fff;-webkit-box-shadow:rgba(0, 0, 0, .2) 0px 1px 3px;box-shadow:rgba(0, 0, 0, .2) 0px 1px 3px;border:1px solid #bbb;padding:5px;font-size:12px;max-width:300px}
+
