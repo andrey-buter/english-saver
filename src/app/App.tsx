@@ -97,10 +97,10 @@ export default class App extends Component<{}, State> {
 	private onSelectWord(wordData: Word) {
 		this.word = wordData;
 
-		// this.saveCloseToast();
+		this.saveCloseToast();
 
-		this.setState({
-			toast: wordData.selection
-		});
+		// this.setState({
+		// 	toast: wordData.selection
+		// });
 	}
 }

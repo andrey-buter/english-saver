@@ -13,4 +13,4 @@ import { EngWordElement } from './app/modules/eng-word.customElement';
 // });
 
 // I haven't understood why customElements doesn't work
-window.customElements?.define('eng-word', EngWordElement);
+// window.customElements?.define('eng-word', EngWordElement);

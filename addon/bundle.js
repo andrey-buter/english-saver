@@ -23026,69 +23026,14 @@ class App_App extends react["Component"] {
     }
     onSelectWord(wordData) {
         this.word = wordData;
-        // this.saveCloseToast();
-        this.setState({
-            toast: wordData.selection
-        });
-    }
-}
-
-// CONCATENATED MODULE: ./src/app/modules/eng-word.customElement.ts
-
-class eng_word_customElement_EngWordElement extends HTMLElement {
-    constructor() {
-        super(...arguments);
-        this.showTranslation = (event) => {
-            this.removeTranslation();
-            const db = new LocalDatabaseService();
-            const word = db.getWordById(this.id);
-            if (!word) {
-                alert('There is not word in DB');
-                return;
-            }
-            const span = document.createElement('span');
-            span.textContent = word.translation;
-            span.classList.add('eng-word__tooltip-translation');
-            this.translation = span;
-            this.appendChild(span);
-        };
-        this.removeTranslation = () => {
-            var _a;
-            // this.translation && this.removeChild(this.translation);
-            (_a = this.translation) === null || _a === void 0 ? void 0 : _a.remove();
-        };
-        // static get observedAttributes() { // (3)
-        // 	return ['uid'];
-        // }
-        // attributeChangedCallback(name, oldValue, newValue) { // (4)
-        // 	this.render();
-        // }
-    }
-    render() {
-        const span = document.createElement('span');
-        span.style.backgroundColor = '#ff9632';
-        span.innerHTML = this.innerHTML;
-        this.innerHTML = '';
-        this.appendChild(span);
-        this.addEventListener('mouseover', this.showTranslation);
-        this.addEventListener('mouseleave', this.removeTranslation);
-    }
-    disconnectedCallback() {
-        this.removeEventListener('mouseover', this.showTranslation);
-        this.removeEventListener('mouseleave', this.removeTranslation);
-    }
-    connectedCallback() {
-        // debugger
-        // if (!this.rendered) {
-        this.render();
-        // 	this.rendered = true;
-        // }
+        this.saveCloseToast();
+        // this.setState({
+        // 	toast: wordData.selection
+        // });
     }
 }
 
 // CONCATENATED MODULE: ./src/main.tsx
-var main_a;
-
 
 
 
@@ -23100,7 +23045,7 @@ document.body.appendChild(div);
 react_dom_default.a.render(react_default.a.createElement(App_App, null), div);
 // });
 // I haven't understood why customElements doesn't work
-(main_a = window.customElements) === null || main_a === void 0 ? void 0 : main_a.define('eng-word', eng_word_customElement_EngWordElement);
+// window.customElements?.define('eng-word', EngWordElement);
 
 
 /***/ })
