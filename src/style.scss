@@ -1,16 +1,23 @@
 // Your styles
-eng-word {
+.eng-saver__highlight-word {
 	position: relative;
 	cursor: pointer;
-}
-.eng-word__tooltip-translation {
-	position: absolute;
-	bottom: calc(100% + 3px);
-	left: 50%;
-	transform: translateX(-50%);
-	background: yellow;
-	color: #000;
-	padding: 4px;
-	border-radius: 2px;
-	box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+
+	&:after {
+		position: absolute;
+		bottom: calc(100% + 3px);
+		left: 50%;
+		transform: translateX(-50%);
+		background: yellow;
+		color: #000;
+		padding: 4px;
+		border-radius: 2px;
+		box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+	}
+
+	&:hover {
+		&:after {
+			content: attr(data-translation);
+		}
+	}
 }

@@ -22694,7 +22694,17 @@ class NodeCssPath {
     // 	return this.#blockTags.test(this.getParentElement(textNode).tagName.toLowerCase() || 'noop');
     // }
     getElementCssSelector(element) {
-        return this.getElementIdCssSelector(element) || this.getElementClassCssSelector(element) || element.tagName.toLowerCase();
+        const id = this.getElementIdCssSelector(element);
+        if (id) {
+            return id;
+        }
+        const selector = this.getElementClassCssSelector(element) || element.tagName.toLowerCase();
+        const index = this.getElementIndexInParent(element);
+        // -1 for <html>
+        if (-1 === index || 'body' === selector) {
+            return selector;
+        }
+        return `${selector}:nth-child(${index + 1})`;
     }
     getElementIdCssSelector(element) {
         return element.id ? `#${element.id}` : null;
@@ -22702,6 +22712,10 @@ class NodeCssPath {
     getElementClassCssSelector(element) {
         const classes = element.className;
         return classes ? `.${classes.split(' ').join('.')}` : null;
+    }
+    getElementIndexInParent(element) {
+        const parent = this.getParentElement(element);
+        return Array.from(parent.children).indexOf(element);
     }
     // selector[0] - parent
     // selector[1] - child
@@ -22843,33 +22857,35 @@ class Highlighter {
             .filter(Boolean);
         return results;
     }
-    highlight(id, selection, startPath, endPath) {
-        const validNodes = this.getValidNodes(startPath, endPath);
+    highlight(word) {
+        const { id: _id, translation, startRange, endRange } = word;
+        const validNodes = this.getValidNodes(startRange, endRange);
+        const id = _id;
         if (!validNodes) {
             return;
         }
         validNodes.forEach(({ startNode, endNode }) => {
             // ts doesn't react on condition outside the loop
-            if (!startPath.offset) {
-                console.warn('[Highlighter.highlight] startPath.offset is undefined');
+            if (!startRange.offset) {
+                console.warn('[Highlighter.highlight] startRange.offset is undefined');
                 return null;
             }
-            if (!endPath.offset) {
-                console.warn('[Highlighter.highlight] endPath.offset is undefined');
+            if (!endRange.offset) {
+                console.warn('[Highlighter.highlight] endRange.offset is undefined');
                 return null;
             }
-            if (startNode.nodeValue && startNode.nodeValue.length < startPath.offset) {
+            if (startNode.nodeValue && startNode.nodeValue.length < startRange.offset) {
                 console.warn('[Highlighter.highlight] startOffest > nodeValue.length');
                 return;
             }
             const start = {
                 node: startNode,
-                offset: startPath.offset
+                offset: startRange.offset
             };
             const end = {
                 node: endNode,
                 // ts doesn't react on condition above about offset so I set unreal offset
-                offset: endPath.offset || 9999
+                offset: endRange.offset || 9999
             };
             const range = this._createRange(start, end);
             // есть ошибка со словами, которые должны выделиться, когда они стоят после УЖЕ выделенного слова
@@ -22890,32 +22906,32 @@ class Highlighter {
             // ! НО! есть проблема при удалении, нужно будет пересчитвыать позицию для nextSiblings
             // ! т.к. их начальная позиция изменится при удалении выделения.
             //
-            // if ((startNode.nodeValue?.length || 0) < startPath.offset) {
+            // if ((startNode.nodeValue?.length || 0) < startRange.offset) {
             // 	return;
             // }
             // ! surroundContents() оборачивает только текстовые ноды.
             // ! если выделение содержит несколько nodes, тогда метод выдает ошибку
             // ! doesn't work - range.surroundContents(this.getWrapper());
             // @see https://developer.mozilla.org/ru/docs/Web/API/Range/surroundContents
-            const newNode = this.getWrapper(id);
+            const newNode = this.getWrapper(id, translation);
             newNode.appendChild(range.extractContents());
             range.insertNode(newNode);
         });
     }
     _createRange(start, end) {
         const range = new Range();
-        debugger;
         range.setStart(start.node, start.offset);
         range.setEnd(end.node, end.offset);
         return range;
     }
     // private matchRangeWithSelectedText(selection: string, range: Range): boolean {
     // }
-    getWrapper(id) {
-        const span = document.createElement('eng-word');
-        // span.style.backgroundColor = '#ff9632';
+    getWrapper(id, translation) {
+        const span = document.createElement('span');
+        span.style.backgroundColor = '#ff9632';
         span.id = id;
-        // span.classList.add('eng-saver__highlight');
+        span.dataset.translation = translation;
+        span.classList.add('eng-saver__highlight-word');
         return span;
     }
     queryTextNodes(parentCssSelector, childrenPaths) {
@@ -22979,7 +22995,7 @@ class App_App extends react["Component"] {
                     ]
                 });
                 this.cancel();
-                highlighter.highlight(word.id, word.selection, word.startRange, word.endRange);
+                highlighter.highlight(word);
             });
         };
         this.cancel = () => {
@@ -23004,16 +23020,16 @@ class App_App extends react["Component"] {
                 words: data
             });
             data.forEach((word) => {
-                (word === null || word === void 0 ? void 0 : word.id) && highlighter.highlight(word.id, word.selection, word.startRange, word.endRange);
+                (word === null || word === void 0 ? void 0 : word.id) && highlighter.highlight(word);
             });
         });
     }
     onSelectWord(wordData) {
         this.word = wordData;
-        this.saveCloseToast();
-        // this.setState({
-        // 	toast: wordData.selection
-        // });
+        // this.saveCloseToast();
+        this.setState({
+            toast: wordData.selection
+        });
     }
 }
 
@@ -23083,6 +23099,7 @@ div.id = 'root';
 document.body.appendChild(div);
 react_dom_default.a.render(react_default.a.createElement(App_App, null), div);
 // });
+// I haven't understood why customElements doesn't work
 (main_a = window.customElements) === null || main_a === void 0 ? void 0 : main_a.define('eng-word', eng_word_customElement_EngWordElement);
 
 

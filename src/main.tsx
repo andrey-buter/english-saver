@@ -12,4 +12,5 @@ import { EngWordElement } from './app/modules/eng-word.customElement';
 	ReactDOM.render(<App />, div);
 // });
 
+// I haven't understood why customElements doesn't work
 window.customElements?.define('eng-word', EngWordElement);

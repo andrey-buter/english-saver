@@ -104,7 +104,21 @@ export class NodeCssPath {
 	// }
 
 	private getElementCssSelector(element: HTMLElement): string {
-		return this.getElementIdCssSelector(element) || this.getElementClassCssSelector(element) || element.tagName.toLowerCase();
+		const id = this.getElementIdCssSelector(element);
+
+		if (id) {
+			return id;
+		}
+
+		const selector = this.getElementClassCssSelector(element) || element.tagName.toLowerCase();
+		const index = this.getElementIndexInParent(element);
+
+		// -1 for <html>
+		if (-1 === index || 'body' === selector) {
+			return selector;
+		}
+
+		return `${selector}:nth-child(${index + 1})`;
 	}
 
 	private getElementIdCssSelector(element: HTMLElement): string | null {
@@ -115,6 +129,12 @@ export class NodeCssPath {
 		const classes = element.className;
 
 		return classes ? `.${classes.split(' ').join('.')}` : null;
+	}
+
+	private getElementIndexInParent(element: HTMLElement): number {
+		const parent = this.getParentElement(element);
+
+		return Array.from(parent.children).indexOf(element);
 	}
 
 	// selector[0] - parent

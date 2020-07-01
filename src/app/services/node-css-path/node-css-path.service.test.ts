@@ -95,11 +95,21 @@ describe('Test class NodeCssPath', () => {
 		expect(nodePath.getElementCssSelector(div)).toBe('#id-selector');
 	});
 
-	it('should return element\s tagName', () => {
+	it("should return element's tagName", () => {
 		const div = document.createElement('div');
+		document.body.appendChild(div);
 
 		// @ts-ignore
-		expect(nodePath.getElementCssSelector(div)).toBe('div');
+		expect(nodePath.getElementCssSelector(div)).toBe('div:nth-child(1)');
+	});
+
+	it("should return element's tagName and 2d nth-child", () => {
+		const div = document.createElement('div');
+		document.body.innerHTML = '<div>Some text</div><div>Some text</div>';
+		document.body.appendChild(div);
+
+		// @ts-ignore
+		expect(nodePath.getElementCssSelector(div)).toBe('div:nth-child(3)');
 	});
 
 	// ? TODO: implement a case to calc tagName/className number
@@ -120,6 +130,7 @@ describe('Test class NodeCssPath', () => {
 			<div>
 				<div>
 					<div>
+						<p>Some text</p>
 						<p ${tagName}>
 							some text
 						</p>
@@ -137,7 +148,7 @@ describe('Test class NodeCssPath', () => {
 			result = nodePath.getParentCssSelector(textNode, 3);
 		}
 
-		expect(result).toBe('div div p');
+		expect(result).toBe('div:nth-child(1) div:nth-child(1) p:nth-child(2)');
 	});
 
 	it('should return css selector if first parent has ID', () => {
@@ -177,6 +188,7 @@ describe('Test class NodeCssPath', () => {
 			<div>
 				<div>
 					<div id="${id}">
+						<span class="${className}">Some text</span>
 						<span class="${className}" ${tagName}>
 							some text
 						</span>
@@ -194,7 +206,7 @@ describe('Test class NodeCssPath', () => {
 			result = nodePath.getParentCssSelector(textNode, 3);
 		}
 
-		expect(result).toBe(`#${id} .${className}`);
+		expect(result).toBe(`#${id} .${className}:nth-child(2)`);
 	});
 
 	it('should return child node path if parent has single text node', () => {
@@ -399,7 +411,7 @@ describe('Test class NodeCssPath', () => {
 					index: 0
 				},
 			],
-			cssParentSelector: '.class div p'
+			cssParentSelector: '.class:nth-child(1) div:nth-child(1) p:nth-child(1)'
 		} as NodePath);
 	});
 
@@ -428,7 +440,7 @@ describe('Test class NodeCssPath', () => {
 					index: 0,
 				}
 			],
-			cssParentSelector: 'html body div',
+			cssParentSelector: 'html body div:nth-child(1)',
 		} as NodePath);
 	});
 });

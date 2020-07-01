@@ -86,18 +86,19 @@ module.exports = {
 			},
 		}),
 		new MiniCssExtractPlugin({
-			filename: 'style-[hash].css',
+			filename: 'style.css',
+			// filename: 'style-[hash].css',
 			allChunks: true,
 		}),
 		new CopyPlugin([
-				{
-					from: path.resolve(__dirname, 'src-addon/'),
-					to: path.resolve(__dirname, 'addon/'),
-					toType: 'dir'
-				}
+			{
+				from: path.resolve(__dirname, 'src-addon/'),
+				to: path.resolve(__dirname, 'addon/'),
+				toType: 'dir',
+			},
 			// options: {
 			// 	concurrency: 100,
 			// },
-			]),
+		]),
 	],
 };

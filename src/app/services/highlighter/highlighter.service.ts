@@ -41,8 +41,11 @@ export class Highlighter {
 		return results as ValidNode[];
 	}
 
-	highlight(id: string, selection: string, startPath: NodePath, endPath: NodePath) {
-		const validNodes = this.getValidNodes(startPath, endPath);
+	highlight(word: Word) {
+		const { id: _id, translation, startRange, endRange } = word;
+		const validNodes = this.getValidNodes(startRange, endRange);
+
+		const id = _id as string;
 
 		if (!validNodes) {
 			return;
@@ -50,29 +53,29 @@ export class Highlighter {
 
 		validNodes.forEach(({ startNode, endNode }) => {
 			// ts doesn't react on condition outside the loop
-			if (!startPath.offset) {
-				console.warn('[Highlighter.highlight] startPath.offset is undefined');
+			if (!startRange.offset) {
+				console.warn('[Highlighter.highlight] startRange.offset is undefined');
 				return null;
 			}
 
-			if (!endPath.offset) {
-				console.warn('[Highlighter.highlight] endPath.offset is undefined');
+			if (!endRange.offset) {
+				console.warn('[Highlighter.highlight] endRange.offset is undefined');
 				return null;
 			}
 
-			if (startNode.nodeValue && startNode.nodeValue.length < startPath.offset) {
+			if (startNode.nodeValue && startNode.nodeValue.length < startRange.offset) {
 				console.warn('[Highlighter.highlight] startOffest > nodeValue.length');
 				return;
 			}
 
 			const start: RangeNodeData = {
 				node: startNode,
-				offset: startPath.offset
+				offset: startRange.offset
 			};
 			const end: RangeNodeData = {
 				node: endNode,
 				// ts doesn't react on condition above about offset so I set unreal offset
-				offset: endPath.offset || 9999
+				offset: endRange.offset || 9999
 			};
 			const range = this._createRange(start, end);
 
@@ -95,7 +98,7 @@ export class Highlighter {
 			// ! т.к. их начальная позиция изменится при удалении выделения.
 			//
 
-			// if ((startNode.nodeValue?.length || 0) < startPath.offset) {
+			// if ((startNode.nodeValue?.length || 0) < startRange.offset) {
 			// 	return;
 			// }
 
@@ -105,7 +108,7 @@ export class Highlighter {
 
 
 			// @see https://developer.mozilla.org/ru/docs/Web/API/Range/surroundContents
-			const newNode = this.getWrapper(id);
+			const newNode = this.getWrapper(id, translation);
 			newNode.appendChild(range.extractContents());
 			range.insertNode(newNode)
 		});
@@ -113,8 +116,6 @@ export class Highlighter {
 
 	_createRange(start: RangeNodeData, end: RangeNodeData): Range {
 		const range = new Range();
-
-		debugger
 
 		range.setStart(start.node, start.offset);
 		range.setEnd(end.node, end.offset);
@@ -126,11 +127,12 @@ export class Highlighter {
 
 	// }
 
-	private getWrapper(id: string) {
-		const span = document.createElement('eng-word');
-		// span.style.backgroundColor = '#ff9632';
+	private getWrapper(id: string, translation: string) {
+		const span = document.createElement('span');
+		span.style.backgroundColor = '#ff9632';
 		span.id = id;
-		// span.classList.add('eng-saver__highlight');
+		span.dataset.translation = translation;
+		span.classList.add('eng-saver__highlight-word');
 
 		return span;
 	}
