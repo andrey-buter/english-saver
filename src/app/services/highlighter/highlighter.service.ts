@@ -41,6 +41,10 @@ export class Highlighter {
 		return results as ValidNode[];
 	}
 
+	// ! не работает для iframes
+	// ! т.к. не сохраняется путь для iframe
+	// ! см https://learningapps.org/watch?v=pku7kxxgk20
+
 	highlight(word: Word) {
 		const { id: _id, translation, startRange, endRange } = word;
 		const validNodes = this.getValidNodes(startRange, endRange);

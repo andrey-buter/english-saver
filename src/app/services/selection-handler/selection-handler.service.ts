@@ -10,18 +10,31 @@ export class SelectionHandler {
 	private selection: SelectWord | undefined;
 
 	constructor() {
-		document.addEventListener('selectionchange', () => {
-			this.handleEvent()
+		this.addEventListener(document, window);
+
+		// listen events in all iframes
+		document.querySelectorAll('iframe').forEach((iframe) => {
+			if (iframe.contentDocument && iframe.contentWindow) {
+				this.addEventListener(iframe.contentDocument, iframe.contentWindow);
+			}
 		})
 	}
 
-	private handleEvent() {
+	private addEventListener(document: Document, window: Window) {
+		document?.addEventListener('selectionchange', () => {
+			this.handleEvent(window)
+		});
+	}
+
+	private handleEvent(window: Window) {
 		const selection = window.getSelection();
+
+		console.log(`[SelectionHandler.handleEvent] Selection started`, selection);
 
 		if (!selection) {
 			return;
 		}
-
+		
 		if ('Range' !== selection.type) {
 			return;
 		}
@@ -30,6 +43,8 @@ export class SelectionHandler {
 
 		if (!(range.commonAncestorContainer as Element).classList?.contains('jfk-bubble-content-id')) {
 			this.selection = new SelectWord(selection.toString(), range);
+			console.log(`[SelectionHandler.handleEvent] Selection saved: ${selection.toString()}`);
+			
 			return;
 		}
 

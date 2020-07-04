@@ -20,13 +20,15 @@ const highlighter = new Highlighter()
 interface State {
 	words: Word[];
 	toast: string | null;
+	hideLoadedMessage: boolean
 }
 
 export default class App extends Component<{}, State> {
-	state = {
+	state: State = {
 		words: [],
-		toast: null
-	} as State;
+		toast: null,
+		hideLoadedMessage: false
+	};
 
 	word: Word | null = null;
 
@@ -38,15 +40,25 @@ export default class App extends Component<{}, State> {
 	}
 
 	render() {
-		const { words, toast } = this.state;
+		const { words, toast, hideLoadedMessage } = this.state;
 
 		return (
 			<>
 				<WordsList words={words}></WordsList>
 				{toast ? <SelectionToast toast={toast} saveCloseToast={this.saveCloseToast} cancel={this.cancel}></SelectionToast> : null }
-				<span>Tadam</span>
+				{!hideLoadedMessage && this.runTimer() ? <span className="eng-saver__loaded">Loaded</span> : ''}
 			</>
 		);
+	}
+
+	runTimer() {
+		setTimeout(() => {
+			this.setState({
+				hideLoadedMessage: true
+			})
+		}, 1000 * 20);
+
+		return true;
 	}
 
 	saveCloseToast = (): void => {
@@ -57,6 +69,8 @@ export default class App extends Component<{}, State> {
 		}
 
 		const word = { ...this.word };
+
+		console.log(`[AppSaver] selection is saving:`, word);
 
 		saver.addItem(word)
 			.then((id) => {
@@ -71,6 +85,7 @@ export default class App extends Component<{}, State> {
 
 				this.cancel();
 				highlighter.highlight(word);
+				console.log(`[AppSaver] selection saved and highlighted:` , word);
 			});
 	}
 
