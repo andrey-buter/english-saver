@@ -5,6 +5,12 @@
 	z-index: 1202;
 	font-size: 12px;
 	max-width: 300px;
+	font-size: 12px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	justify-content: center;
+	font-family: Arial;
 
 	li {
 		box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px;
@@ -13,10 +19,36 @@
 		margin-bottom: 5px;
 		border-radius: 3px;
 		background: #fff;
+		display: flex;
+		align-items: center;
 
 		&.highlighted {
 			border-color: red;
 		}
+
+		button {
+			display: none;
+			margin-left: 5px;
+			cursor: pointer;
+			padding: 5px;
+			background: red;
+			border: none;
+			color: #fff;
+			border-radius: 2px;
+			box-sizing: border-box;
+			width: 26px;
+			height: 26px;
+			font-size: 12px;
+		}
+
+		&:hover {
+			button {
+				display: block;
+			}
+		}
 	}
 
+	&-translation {
+		font-size: 10px;
+	}
 }

@@ -1,19 +1,14 @@
 import React, { Component } from "react";
 import { WordsList } from "./components/WordsList/WordsList";
-import { Word } from "./models/word.model";
-import { FirebaseService } from './services/firebase/firebase.service';
-import { DataSaverService } from './services/saver/saver.service';
-import { LocalDatabaseService } from './services/local-db/local-db.service';
+import { Word, RawWord } from "./models/word.model";
 import { SelectionToast } from "./components/SelectionToast/SelectionToast";
 import { SelectionHandler } from "./services/selection-handler/selection-handler.service";
 import { Highlighter } from "./services/highlighter/highlighter.service";
+import { saver } from "./databases";
 
 // import '../styles/App.css';
 
-const remoteDb = new FirebaseService();
-const localDb = new LocalDatabaseService();
 
-const saver = new DataSaverService(localDb, remoteDb);
 const selectionHandler = new SelectionHandler();
 const highlighter = new Highlighter()
 
@@ -30,13 +25,13 @@ export default class App extends Component<{}, State> {
 		hideLoadedMessage: false
 	};
 
-	word: Word | null = null;
+	#word: RawWord | null = null;
 
 	constructor(props: {}) {
 		super(props);
 
 		this.initDb();
-		selectionHandler.onSelect((wordData: Word) => this.onSelectWord(wordData));
+		selectionHandler.onSelect((wordData: RawWord) => this.onSelectWord(wordData));
 	}
 
 	render() {
@@ -44,7 +39,7 @@ export default class App extends Component<{}, State> {
 
 		return (
 			<>
-				<WordsList words={words}></WordsList>
+				<WordsList words={words} removeItem={this.removeItem}></WordsList>
 				{toast ? <SelectionToast toast={toast} saveCloseToast={this.saveCloseToast} cancel={this.cancel}></SelectionToast> : null }
 				{!hideLoadedMessage && this.runTimer() ? <span className="eng-saver__loaded">Loaded</span> : ''}
 			</>
@@ -62,20 +57,18 @@ export default class App extends Component<{}, State> {
 	}
 
 	saveCloseToast = (): void => {
-		if (!this.word) {
+		const rawWord = this.getWord();
+
+		if (!rawWord) {
 			alert('No selected word!');
 			this.cancel();
 			return;
 		}
 
-		const word = { ...this.word };
+		console.log(`[AppSaver] selection is saving:`, rawWord);
 
-		console.log(`[AppSaver] selection is saving:`, word);
-
-		saver.addItem(word)
-			.then((id) => {
-				word.id = id;
-
+		saver.addItem(rawWord)
+			.then((word) => {
 				this.setState({
 					words: [
 						...this.state.words,
@@ -85,16 +78,25 @@ export default class App extends Component<{}, State> {
 
 				this.cancel();
 				highlighter.highlight(word);
-				console.log(`[AppSaver] selection saved and highlighted:` , word);
+				console.log(`[AppSaver] selection saved and highlighted:` , rawWord);
 			});
 	}
 
 	cancel = (): void => {
-		this.word = null;
+		this.setWord(null);
 
 		this.setState({
 			toast: null
 		});
+	}
+
+	removeItem = (wordId: string): void => {
+		saver.removeWord(wordId)
+			.then(() => {
+				this.setState({
+					words: saver.getWords()
+				});
+			})
 	}
 
 	private initDb() {
@@ -109,13 +111,21 @@ export default class App extends Component<{}, State> {
 		});
 	}
 
-	private onSelectWord(wordData: Word) {
-		this.word = wordData;
+	private onSelectWord(wordData: RawWord) {
+		this.setWord(wordData);
 
 		this.saveCloseToast();
 
 		// this.setState({
 		// 	toast: wordData.selection
 		// });
+	}
+
+	private getWord() {
+		return this.#word;
+	}
+
+	private setWord(word: RawWord | null) {
+		this.#word = word;
 	}
 }

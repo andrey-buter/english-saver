@@ -1,4 +1,4 @@
-import { WordsDatabase } from "../../models/words-database.model";
+import { WordsDatabase, RawWordsDatabase } from "../../models/words-database.model";
 import { Word } from "../../models/word.model";
 
 export class LocalDatabaseService {
@@ -15,14 +15,22 @@ export class LocalDatabaseService {
 		return data;
 	}
 
-	saveInitData(data: WordsDatabase) {
-		Object.values(data).forEach((word) => {
+	saveInitData(rawData: RawWordsDatabase) {
+		Object.values(rawData).forEach((word) => {
 			if (this.#savedWords.includes(word.selection)) {
 				return;
 			}
 
 			this.#savedWords.push(word.selection);
 		});
+
+		let data: WordsDatabase = {};
+
+		for (const id in rawData) {
+			if (rawData.hasOwnProperty(id)) {
+				data[id] = {id, ...rawData[id]}
+			}
+		}
 
 		this.saveData(data);
 	}
@@ -53,6 +61,14 @@ export class LocalDatabaseService {
 
 	public hasWord(word: string) {
 		return this.#savedWords.includes(word);
+	}
+
+	public removeItem(wordId: string) {
+		const data = this.getData();
+
+		delete data[wordId];
+
+		this.saveData(data);
 	}
 
 	// addWord(word, {context, offset, url, selector}, isLoaded = false) {

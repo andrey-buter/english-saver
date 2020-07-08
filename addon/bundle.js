@@ -98,6 +98,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__metadata", function() { return __metadata; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__awaiter", function() { return __awaiter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__generator", function() { return __generator; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__createBinding", function() { return __createBinding; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__exportStar", function() { return __exportStar; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__values", function() { return __values; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__read", function() { return __read; });
@@ -113,18 +114,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldGet", function() { return __classPrivateFieldGet; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldSet", function() { return __classPrivateFieldSet; });
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright (c) Microsoft Corporation.
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
@@ -217,8 +218,13 @@ function __generator(thisArg, body) {
     }
 }
 
+function __createBinding(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}
+
 function __exportStar(m, exports) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 
 function __values(o) {
@@ -371,7 +377,7 @@ var ERRORS = (_a = {},
 var ERROR_FACTORY = new util.ErrorFactory('app', 'Firebase', ERRORS);
 
 var name$1 = "@firebase/app";
-var version = "0.6.4";
+var version = "0.6.7";
 
 var name$2 = "@firebase/analytics";
 
@@ -605,7 +611,7 @@ var FirebaseAppImpl = /** @class */ (function () {
     FirebaseAppImpl.prototype.delete ||
     console.log('dc');
 
-var version$1 = "7.14.5";
+var version$1 = "7.15.5";
 
 /**
  * @license
@@ -1032,7 +1038,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var firebase = _interopDefault(__webpack_require__(1));
 
 var name = "firebase";
-var version = "7.14.6";
+var version = "7.15.5";
 
 /**
  * @license
@@ -1660,6 +1666,12 @@ function isUWP() {
 function isNodeSdk() {
     return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
 }
+/** Returns true if we are running in Safari. */
+function isSafari() {
+    return (!isNode() &&
+        navigator.userAgent.includes('Safari') &&
+        !navigator.userAgent.includes('Chrome'));
+}
 
 /**
  * @license
@@ -1735,7 +1747,7 @@ var ErrorFactory = /** @class */ (function () {
 function replaceTemplate(template, data) {
     return template.replace(PATTERN, function (_, key) {
         var value = data[key];
-        return value != null ? value.toString() : "<" + key + "?>";
+        return value != null ? String(value) : "<" + key + "?>";
     });
 }
 var PATTERN = /\{\$([^}]+)}/g;
@@ -2691,6 +2703,7 @@ exports.isMobileCordova = isMobileCordova;
 exports.isNode = isNode;
 exports.isNodeSdk = isNodeSdk;
 exports.isReactNative = isReactNative;
+exports.isSafari = isSafari;
 exports.isUWP = isUWP;
 exports.isValidFormat = isValidFormat;
 exports.isValidTimestamp = isValidTimestamp;
@@ -3187,13 +3200,17 @@ var Logger = /** @class */ (function () {
         },
         set: function (val) {
             if (!(val in LogLevel)) {
-                throw new TypeError('Invalid value assigned to `logLevel`');
+                throw new TypeError("Invalid value \"" + val + "\" assigned to `logLevel`");
             }
             this._logLevel = val;
         },
         enumerable: true,
         configurable: true
     });
+    // Workaround for setter/getter having to be the same type.
+    Logger.prototype.setLogLevel = function (val) {
+        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
+    };
     Object.defineProperty(Logger.prototype, "logHandler", {
         get: function () {
             return this._logHandler;
@@ -3263,9 +3280,8 @@ var Logger = /** @class */ (function () {
     return Logger;
 }());
 function setLogLevel(level) {
-    var newLevel = typeof level === 'string' ? levelStringToEnum[level] : level;
     instances.forEach(function (inst) {
-        inst.logLevel = newLevel;
+        inst.setLogLevel(level);
     });
 }
 function setUserLogHandler(logCallback, options) {
@@ -4192,6 +4208,12 @@ exports.unstable_shouldYield=function(){var a=exports.unstable_now();V(a);var b=
 
 /***/ }),
 /* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5295,6 +5317,7 @@ var REFERER_PARAM = 'r';
 var FORGE_REF = 'f';
 var FORGE_DOMAIN = 'firebaseio.com';
 var LAST_SESSION_PARAM = 'ls';
+var APPLICATION_ID_PARAM = 'p';
 var WEBSOCKET = 'websocket';
 var LONG_POLLING = 'long_polling';
 
@@ -14255,16 +14278,18 @@ var LP_CONNECT_TIMEOUT = 30000;
  */
 var BrowserPollConnection = /** @class */ (function () {
     /**
-     * @param {string} connId An identifier for this connection, used for logging
-     * @param {RepoInfo} repoInfo The info for the endpoint to send data to.
-     * @param {string=} transportSessionId Optional transportSessionid if we are reconnecting for an existing
+     * @param connId An identifier for this connection, used for logging
+     * @param repoInfo The info for the endpoint to send data to.
+     * @param applicationId The Firebase App ID for this project.
+     * @param transportSessionId Optional transportSessionid if we are reconnecting for an existing
      *                                         transport session
-     * @param {string=}  lastSessionId Optional lastSessionId if the PersistentConnection has already created a
+     * @param lastSessionId Optional lastSessionId if the PersistentConnection has already created a
      *                                     connection previously
      */
-    function BrowserPollConnection(connId, repoInfo, transportSessionId, lastSessionId) {
+    function BrowserPollConnection(connId, repoInfo, applicationId, transportSessionId, lastSessionId) {
         this.connId = connId;
         this.repoInfo = repoInfo;
+        this.applicationId = applicationId;
         this.transportSessionId = transportSessionId;
         this.lastSessionId = lastSessionId;
         this.bytesSent = 0;
@@ -14363,6 +14388,9 @@ var BrowserPollConnection = /** @class */ (function () {
             }
             if (_this.lastSessionId) {
                 urlParams[LAST_SESSION_PARAM] = _this.lastSessionId;
+            }
+            if (_this.applicationId) {
+                urlParams[APPLICATION_ID_PARAM] = _this.applicationId;
             }
             if (typeof location !== 'undefined' &&
                 location.href &&
@@ -14878,14 +14906,16 @@ else if (typeof WebSocket !== 'undefined') {
  */
 var WebSocketConnection = /** @class */ (function () {
     /**
-     * @param {string} connId identifier for this transport
-     * @param {RepoInfo} repoInfo The info for the websocket endpoint.
-     * @param {string=} transportSessionId Optional transportSessionId if this is connecting to an existing transport
+     * @param connId identifier for this transport
+     * @param repoInfo The info for the websocket endpoint.
+     * @param applicationId The Firebase App ID for this project.
+     * @param transportSessionId Optional transportSessionId if this is connecting to an existing transport
      *                                         session
-     * @param {string=} lastSessionId Optional lastSessionId if there was a previous connection
+     * @param lastSessionId Optional lastSessionId if there was a previous connection
      */
-    function WebSocketConnection(connId, repoInfo, transportSessionId, lastSessionId) {
+    function WebSocketConnection(connId, repoInfo, applicationId, transportSessionId, lastSessionId) {
         this.connId = connId;
+        this.applicationId = applicationId;
         this.keepaliveTimer = null;
         this.frames = null;
         this.totalFrames = 0;
@@ -14939,7 +14969,8 @@ var WebSocketConnection = /** @class */ (function () {
                 // UA Format: Firebase/<wire_protocol>/<sdk_version>/<platform>/<device>
                 var options = {
                     headers: {
-                        'User-Agent': "Firebase/" + PROTOCOL_VERSION + "/" + SDK_VERSION + "/" + process.platform + "/" + device
+                        'User-Agent': "Firebase/" + PROTOCOL_VERSION + "/" + SDK_VERSION + "/" + process.platform + "/" + device,
+                        'X-Firebase-GMPID': this.applicationId || ''
                     }
                 };
                 // Plumb appropriate http_proxy environment variable into faye-websocket if it exists.
@@ -14953,7 +14984,12 @@ var WebSocketConnection = /** @class */ (function () {
                 this.mySock = new WebSocketImpl(this.connURL, [], options);
             }
             else {
-                this.mySock = new WebSocketImpl(this.connURL);
+                var options = {
+                    headers: {
+                        'X-Firebase-GMPID': this.applicationId || ''
+                    }
+                };
+                this.mySock = new WebSocketImpl(this.connURL, [], options);
             }
         }
         catch (e) {
@@ -15333,17 +15369,19 @@ var SERVER_HELLO = 'h';
  */
 var Connection = /** @class */ (function () {
     /**
-     * @param {!string} id - an id for this connection
-     * @param {!RepoInfo} repoInfo_ - the info for the endpoint to connect to
-     * @param {function(Object)} onMessage_ - the callback to be triggered when a server-push message arrives
-     * @param {function(number, string)} onReady_ - the callback to be triggered when this connection is ready to send messages.
-     * @param {function()} onDisconnect_ - the callback to be triggered when a connection was lost
-     * @param {function(string)} onKill_ - the callback to be triggered when this connection has permanently shut down.
-     * @param {string=} lastSessionId - last session id in persistent connection. is used to clean up old session in real-time server
+     * @param id - an id for this connection
+     * @param repoInfo_ - the info for the endpoint to connect to
+     * @param applicationId_ - the Firebase App ID for this project
+     * @param onMessage_ - the callback to be triggered when a server-push message arrives
+     * @param onReady_ - the callback to be triggered when this connection is ready to send messages.
+     * @param onDisconnect_ - the callback to be triggered when a connection was lost
+     * @param onKill_ - the callback to be triggered when this connection has permanently shut down.
+     * @param lastSessionId - last session id in persistent connection. is used to clean up old session in real-time server
      */
-    function Connection(id, repoInfo_, onMessage_, onReady_, onDisconnect_, onKill_, lastSessionId) {
+    function Connection(id, repoInfo_, applicationId_, onMessage_, onReady_, onDisconnect_, onKill_, lastSessionId) {
         this.id = id;
         this.repoInfo_ = repoInfo_;
+        this.applicationId_ = applicationId_;
         this.onMessage_ = onMessage_;
         this.onReady_ = onReady_;
         this.onDisconnect_ = onDisconnect_;
@@ -15364,7 +15402,7 @@ var Connection = /** @class */ (function () {
     Connection.prototype.start_ = function () {
         var _this = this;
         var conn = this.transportManager_.initialTransport();
-        this.conn_ = new conn(this.nextTransportId_(), this.repoInfo_, undefined, this.lastSessionId);
+        this.conn_ = new conn(this.nextTransportId_(), this.repoInfo_, this.applicationId_, undefined, this.lastSessionId);
         // For certain transports (WebSockets), we need to send and receive several messages back and forth before we
         // can consider the transport healthy.
         this.primaryResponsesRequired_ = conn['responsesRequiredToBeHealthy'] || 0;
@@ -15626,7 +15664,7 @@ var Connection = /** @class */ (function () {
     };
     Connection.prototype.startUpgrade_ = function (conn) {
         var _this = this;
-        this.secondaryConn_ = new conn(this.nextTransportId_(), this.repoInfo_, this.sessionId);
+        this.secondaryConn_ = new conn(this.nextTransportId_(), this.repoInfo_, this.applicationId_, this.sessionId);
         // For certain transports (WebSockets), we need to send and receive several messages back and forth before we
         // can consider the transport healthy.
         this.secondaryResponsesRequired_ =
@@ -15879,11 +15917,13 @@ var PersistentConnection = /** @class */ (function (_super) {
     /**
      * @implements {ServerActions}
      * @param repoInfo_ Data about the namespace we are connecting to
+     * @param applicationId_ The Firebase App ID for this project
      * @param onDataUpdate_ A callback for new data from the server
      */
-    function PersistentConnection(repoInfo_, onDataUpdate_, onConnectStatus_, onServerInfoUpdate_, authTokenProvider_, authOverride_) {
+    function PersistentConnection(repoInfo_, applicationId_, onDataUpdate_, onConnectStatus_, onServerInfoUpdate_, authTokenProvider_, authOverride_) {
         var _this = _super.call(this) || this;
         _this.repoInfo_ = repoInfo_;
+        _this.applicationId_ = applicationId_;
         _this.onDataUpdate_ = onDataUpdate_;
         _this.onConnectStatus_ = onConnectStatus_;
         _this.onServerInfoUpdate_ = onServerInfoUpdate_;
@@ -16394,7 +16434,7 @@ var PersistentConnection = /** @class */ (function (_super) {
                 if (!canceled_1) {
                     log('getToken() completed. Creating connection.');
                     self_1.authToken_ = result && result.accessToken;
-                    connection_1 = new Connection(connId_1, self_1.repoInfo_, onDataMessage_1, onReady_1, onDisconnect_1, 
+                    connection_1 = new Connection(connId_1, self_1.repoInfo_, self_1.applicationId_, onDataMessage_1, onReady_1, onDisconnect_1, 
                     /* onKill= */ function (reason) {
                         warn(reason + ' (' + self_1.repoInfo_.toString() + ')');
                         self_1.interrupt(SERVER_KILL_INTERRUPT_REASON);
@@ -16826,7 +16866,7 @@ var Repo = /** @class */ (function () {
                     throw new Error('Invalid authOverride provided: ' + e);
                 }
             }
-            this.persistentConnection_ = new PersistentConnection(this.repoInfo_, this.onDataUpdate_.bind(this), this.onConnectStatus_.bind(this), this.onServerInfoUpdate_.bind(this), authTokenProvider, authOverride);
+            this.persistentConnection_ = new PersistentConnection(this.repoInfo_, app.options.appId, this.onDataUpdate_.bind(this), this.onConnectStatus_.bind(this), this.onServerInfoUpdate_.bind(this), authTokenProvider, authOverride);
             this.server_ = this.persistentConnection_;
         }
         authTokenProvider.addTokenChangeListener(function (token) {
@@ -19523,7 +19563,7 @@ var TEST_ACCESS = /*#__PURE__*/Object.freeze({
 });
 
 var name = "@firebase/database";
-var version = "0.6.3";
+var version = "0.6.6";
 
 /**
  * @license
@@ -19583,10 +19623,10 @@ exports.enableLogging = enableLogging;
 exports.registerDatabase = registerDatabase;
 //# sourceMappingURL=index.cjs.js.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(18)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(19)))
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -19776,7 +19816,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20211,17 +20251,11 @@ Y(ch.prototype,{v:{name:"toJSON",j:[V(null,!0)]}});Y(u.prototype,{toJSON:{name:"
 Y(lm.prototype,{Ob:{name:"getSession",j:[]},dc:{name:"enroll",j:[ro(),V("displayName",!0)]},$c:{name:"unenroll",j:[X({name:"multiFactorInfo",J:"a valid multiFactorInfo",optional:!1,K:uo},V(),"multiFactorInfoIdentifier")]}});Y(ho.prototype,{clear:{name:"clear",j:[]},render:{name:"render",j:[]},verify:{name:"verify",j:[]}});Z(Gf,"parseLink",Of,[V("link")]);Z(Rn,"assertion",function(a){return new jm(a)},[qo("phone")]);
 (function(){if("undefined"!==typeof _firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a&&_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL&&_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.registerComponent){var a={ActionCodeInfo:{Operation:{EMAIL_SIGNIN:xf,PASSWORD_RESET:"PASSWORD_RESET",RECOVER_EMAIL:"RECOVER_EMAIL",REVERT_SECOND_FACTOR_ADDITION:zf,VERIFY_AND_CHANGE_EMAIL:yf,VERIFY_EMAIL:"VERIFY_EMAIL"}},Auth:un,AuthCredential:yg,Error:u};Z(a,"EmailAuthProvider",Vg,[]);Z(a,"FacebookAuthProvider",Mg,[]);Z(a,"GithubAuthProvider",Og,[]);Z(a,"GoogleAuthProvider",Qg,[]);Z(a,"TwitterAuthProvider",Sg,[]);
 Z(a,"OAuthProvider",M,[V("providerId")]);Z(a,"SAMLAuthProvider",Lg,[V("providerId")]);Z(a,"PhoneAuthProvider",hh,[oo()]);Z(a,"RecaptchaVerifier",ho,[X(V(),no(),"recaptchaContainer"),W("recaptchaParameters",!0),po()]);Z(a,"ActionCodeURL",Gf,[]);Z(a,"PhoneMultiFactorGenerator",Rn,[]);_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.registerComponent({name:"auth",instanceFactory:function(b){b=b.getProvider("app").getImmediate();return new un(b)},multipleInstances:!1,serviceProps:a,instantiationMode:"LAZY",type:"PUBLIC"});_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.registerComponent({name:"auth-internal",
-instanceFactory:function(b){b=b.getProvider("auth").getImmediate();return{getUid:r(b.getUid,b),getToken:r(b.kc,b),addAuthTokenListener:r(b.bc,b),removeAuthTokenListener:r(b.Nc,b)}},multipleInstances:!1,instantiationMode:"LAZY",type:"PRIVATE"});_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.registerVersion("@firebase/auth","0.14.6");_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.extendNamespace({User:P})}else throw Error("Cannot find the firebase namespace; be sure to include firebase-app.js before this library.");})();}).apply(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {});
+instanceFactory:function(b){b=b.getProvider("auth").getImmediate();return{getUid:r(b.getUid,b),getToken:r(b.kc,b),addAuthTokenListener:r(b.bc,b),removeAuthTokenListener:r(b.Nc,b)}},multipleInstances:!1,instantiationMode:"LAZY",type:"PRIVATE"});_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.registerVersion("@firebase/auth","0.14.7");_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.extendNamespace({User:P})}else throw Error("Cannot find the firebase namespace; be sure to include firebase-app.js before this library.");})();}).apply(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {});
 
 //# sourceMappingURL=auth.esm.js.map
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8)))
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// extracted by mini-css-extract-plugin
 
 /***/ }),
 /* 21 */
@@ -20249,26 +20283,600 @@ var WordsList_WordsList = __webpack_require__(16);
 
 
 class WordsList_WordsList_WordsList extends react["Component"] {
+    remove(id) {
+        return () => {
+            this.props.removeItem(id);
+        };
+    }
     render() {
-        const { words } = this.props;
+        const { words, removeItem } = this.props;
         return (react_default.a.createElement("ul", { className: "eng-saver__words-list" }, words.map((word) => {
-            return react_default.a.createElement("li", { key: word.id }, word.selection);
+            return (react_default.a.createElement("li", { key: word.id },
+                react_default.a.createElement("div", null,
+                    react_default.a.createElement("div", { className: "eng-saver__words-list-selection" }, word.selection),
+                    react_default.a.createElement("div", { className: "eng-saver__words-list-translation" }, word.translation)),
+                react_default.a.createElement("button", { type: "button", onClick: this.remove(word.id || '') }, "\u2715")));
         })));
     }
 }
+
+// EXTERNAL MODULE: ./src/app/components/SelectionToast/SelectionToast.scss
+var SelectionToast_SelectionToast = __webpack_require__(17);
+
+// CONCATENATED MODULE: ./src/app/components/SelectionToast/SelectionToast.tsx
+
+
+class SelectionToast_SelectionToast_SelectionToast extends react["Component"] {
+    render() {
+        const { toast, saveCloseToast, cancel } = this.props;
+        return (react_default.a.createElement("div", { className: "eng-saver__toast" },
+            react_default.a.createElement("div", { className: "eng-saver__context" }, toast),
+            react_default.a.createElement("button", { type: "button", onClick: saveCloseToast }, "Save & Close"),
+            react_default.a.createElement("button", { type: "button", onClick: cancel }, "Cancel")));
+    }
+}
+
+// CONCATENATED MODULE: ./src/app/services/node-css-path/node-css-path.service.ts
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _blockTags, _nonBlockTagsLimit, _cssSelectorDepth, _cssSelectorsDivider;
+class NodeCssPath {
+    constructor() {
+        _blockTags.set(this, /^(div|li|p|body)$/); // start with (^) + end on ($)
+        _nonBlockTagsLimit.set(this, 10);
+        _cssSelectorDepth.set(this, 3);
+        _cssSelectorsDivider.set(this, ' ');
+    }
+    // startSelectionTextNodeNumber
+    // endSelectionTextNodeNumber
+    // startOffset
+    // endOffset
+    // parent selector
+    getPath(node) {
+        const childrenNodesPaths = this.getChildrenNodesPaths(node);
+        const innerElements = childrenNodesPaths.length - 1; // minus #text
+        const cssParentSelector = this.getParentCssSelector(node, innerElements + __classPrivateFieldGet(this, _cssSelectorDepth));
+        const cssAncestorsArray = cssParentSelector.split(__classPrivateFieldGet(this, _cssSelectorsDivider));
+        const selectors = cssAncestorsArray
+            .slice(0, cssAncestorsArray.length - innerElements)
+            .join(__classPrivateFieldGet(this, _cssSelectorsDivider));
+        return {
+            childrenNodesPaths,
+            cssParentSelector: selectors
+        };
+    }
+    getChildrenNodesPaths(originNode, limit = __classPrivateFieldGet(this, _nonBlockTagsLimit)) {
+        let node = originNode;
+        let result = [];
+        while (true) {
+            if (this.isBlockTag(node)) {
+                break;
+            }
+            result.push(this.getChildPath(node));
+            limit--;
+            if (0 === limit) {
+                throw new Error(`[NodeCssPath.getNumbersInParentsNodesUntilBlockTag] There isn't block tags in ${limit} ancestors`);
+            }
+            node = this.getParentElement(node);
+        }
+        return result.reverse();
+    }
+    getChildPath(childNode) {
+        let counter = 0;
+        let node = childNode;
+        while (true) {
+            if (!node.previousSibling) {
+                break;
+            }
+            node = node.previousSibling;
+            counter++;
+        }
+        return {
+            // ! I don't know about that all browsers have the same nodeName of TEXT_NODE
+            // ! in FireFox and Chrome it's #text
+            nodeName: childNode.nodeName.toLowerCase(),
+            index: counter
+        };
+    }
+    getParentCssSelector(node, depth = __classPrivateFieldGet(this, _cssSelectorDepth), cssSelectors = []) {
+        const parent = this.getParentElement(node);
+        const selector = this.getElementCssSelector(parent);
+        cssSelectors.push(selector);
+        if (parent.id) {
+            return this.getHierarchyCssSelector(cssSelectors);
+        }
+        depth--;
+        if (0 === depth) {
+            return this.getHierarchyCssSelector(cssSelectors);
+        }
+        return this.getParentCssSelector(parent, depth, cssSelectors);
+    }
+    hasTextNote(element) {
+        return element.childNodes.length > 0;
+    }
+    isBlockTag(node) {
+        return __classPrivateFieldGet(this, _blockTags).test(node.nodeName.toLowerCase() || 'noop');
+    }
+    // private isParentBlockTag(textNode: Node) {
+    // 	return this.#blockTags.test(this.getParentElement(textNode).tagName.toLowerCase() || 'noop');
+    // }
+    getElementCssSelector(element) {
+        const id = this.getElementIdCssSelector(element);
+        if (id) {
+            return id;
+        }
+        const selector = this.getElementClassCssSelector(element) || element.tagName.toLowerCase();
+        const index = this.getElementIndexInParent(element);
+        // -1 for <html>
+        if (-1 === index || 'body' === selector) {
+            return selector;
+        }
+        return `${selector}:nth-child(${index + 1})`;
+    }
+    getElementIdCssSelector(element) {
+        return element.id ? `#${element.id}` : null;
+    }
+    getElementClassCssSelector(element) {
+        const classes = element.className;
+        return classes ? `.${classes.split(' ').join('.')}` : null;
+    }
+    getElementIndexInParent(element) {
+        const parent = this.getParentElement(element);
+        return Array.from(parent.children).indexOf(element);
+    }
+    // selector[0] - parent
+    // selector[1] - child
+    // expected queue: 'parent > child'
+    getHierarchyCssSelector(selectors) {
+        return selectors.reverse().join(__classPrivateFieldGet(this, _cssSelectorsDivider));
+    }
+    // <html> doesn't have parent element
+    // so to avoid checking of NULL every where
+    // I will return body element if parentElement doesn't exist
+    getParentElement(node) {
+        return node.parentElement || document.body;
+    }
+}
+_blockTags = new WeakMap(), _nonBlockTagsLimit = new WeakMap(), _cssSelectorDepth = new WeakMap(), _cssSelectorsDivider = new WeakMap();
+
+// CONCATENATED MODULE: ./src/app/services/select-word/select-word.service.ts
+/**
+ * Classes
+ * 1) Get context sentense
+ * 2) get selection path to save it
+ */
+
+const nodepath = new NodeCssPath();
+class SelectWord {
+    // TODO: format selection
+    constructor(selection, range) {
+        this.selection = selection;
+        this.range = range;
+        this.translation = '';
+        const { startOffset, endOffset, startContainer, endContainer } = this.range;
+        this.startOffset = startOffset;
+        this.endOffset = endOffset;
+        this.startContainer = startContainer;
+        this.endContainer = endContainer;
+    }
+    addTranslation(text) {
+        this.translation = text;
+    }
+    getData() {
+        return {
+            selection: this.selection,
+            originWord: this.selection,
+            context: '',
+            startRange: Object.assign(Object.assign({}, nodepath.getPath(this.startContainer)), { offset: this.startOffset }),
+            endRange: Object.assign(Object.assign({}, nodepath.getPath(this.endContainer)), { offset: this.endOffset }),
+            translation: this.translation,
+            uri: window.location.href
+        };
+    }
+}
+
+// CONCATENATED MODULE: ./src/app/services/selection-handler/selection-handler.service.ts
+var selection_handler_service_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var _selectionTimeout, _runOnSelect;
+
+class selection_handler_service_SelectionHandler {
+    constructor() {
+        _selectionTimeout.set(this, void 0);
+        _runOnSelect.set(this, (wordData) => { });
+        this.addEventListener(document, window);
+        // listen events in all iframes
+        document.querySelectorAll('iframe').forEach((iframe) => {
+            if (iframe.contentDocument && iframe.contentWindow) {
+                this.addEventListener(iframe.contentDocument, iframe.contentWindow);
+            }
+        });
+    }
+    addEventListener(document, window) {
+        document === null || document === void 0 ? void 0 : document.addEventListener('selectionchange', () => {
+            this.handleEvent(window);
+        });
+    }
+    handleEvent(window) {
+        var _a;
+        const selection = window.getSelection();
+        console.log(`[SelectionHandler.handleEvent] Selection started`, selection);
+        if (!selection) {
+            return;
+        }
+        if ('Range' !== selection.type) {
+            return;
+        }
+        const range = selection.getRangeAt(0);
+        if (!((_a = range.commonAncestorContainer.classList) === null || _a === void 0 ? void 0 : _a.contains('jfk-bubble-content-id'))) {
+            this.selection = new SelectWord(selection.toString(), range);
+            console.log(`[SelectionHandler.handleEvent] Selection saved: ${selection.toString()}`);
+            return;
+        }
+        if (selection_handler_service_classPrivateFieldGet(this, _selectionTimeout)) {
+            clearTimeout(selection_handler_service_classPrivateFieldGet(this, _selectionTimeout));
+        }
+        // ! TODO: Find a solution to resolve typings conflict for setTimeout()
+        // ! I don't know how to resolve .d.ts conflict between dom.d.ts and @node
+        // ! They have different declaration of setTimeout
+        // ! Check branch jest-1!
+        // @ts-ignore
+        __classPrivateFieldSet(this, _selectionTimeout, setTimeout(() => {
+            // timeout resolves selection of several words by mouse
+            if (this.selection) {
+                this.selection.addTranslation(selection.toString());
+                selection_handler_service_classPrivateFieldGet(this, _runOnSelect).call(this, this.selection.getData());
+            }
+            // const sentence = engSelection.getSentence();
+            // const word = engSelection.getSelectionObject().word;
+            // if (saver.hasWord(word)) {
+            // 	list.highlightItem(word);
+            // }
+            // toast.context(sentence);
+            // toast.show();
+        }, 500));
+    }
+    onSelect(callback) {
+        __classPrivateFieldSet(this, _runOnSelect, callback);
+    }
+}
+_selectionTimeout = new WeakMap(), _runOnSelect = new WeakMap();
+
+// CONCATENATED MODULE: ./src/app/services/highlighter/highlighter.service.ts
+class Highlighter {
+    getValidNodes(startPath, endPath) {
+        const startNodes = this.queryTextNodes(startPath.cssParentSelector, startPath.childrenNodesPaths);
+        const endNodes = this.queryTextNodes(endPath.cssParentSelector, endPath.childrenNodesPaths);
+        if (startNodes.length !== endNodes.length) {
+            console.warn('[Highlighter.getValidNodes] startNodes.length !== endNodes.length');
+            return null;
+        }
+        const results = startNodes
+            .map((startNode, key) => {
+            const endNode = endNodes[key];
+            if (!startNode) {
+                return;
+            }
+            if (!endNode) {
+                return;
+            }
+            return { startNode, endNode };
+        })
+            .filter(Boolean);
+        return results;
+    }
+    // ! не работает для iframes
+    // ! т.к. не сохраняется путь для iframe
+    // ! см https://learningapps.org/watch?v=pku7kxxgk20
+    highlight(word) {
+        const { id: _id, translation, startRange, endRange } = word;
+        const validNodes = this.getValidNodes(startRange, endRange);
+        const id = _id;
+        if (!validNodes) {
+            return;
+        }
+        validNodes.forEach(({ startNode, endNode }) => {
+            // ts doesn't react on condition outside the loop
+            if (!startRange.offset) {
+                console.warn('[Highlighter.highlight] startRange.offset is undefined');
+                return null;
+            }
+            if (!endRange.offset) {
+                console.warn('[Highlighter.highlight] endRange.offset is undefined');
+                return null;
+            }
+            if (startNode.nodeValue && startNode.nodeValue.length < startRange.offset) {
+                console.warn('[Highlighter.highlight] startOffest > nodeValue.length');
+                return;
+            }
+            const start = {
+                node: startNode,
+                offset: startRange.offset
+            };
+            const end = {
+                node: endNode,
+                // ts doesn't react on condition above about offset so I set unreal offset
+                offset: endRange.offset || 9999
+            };
+            const range = this._createRange(start, end);
+            // есть ошибка со словами, которые должны выделиться, когда они стоят после УЖЕ выделенного слова
+            // Один вариант решения - сортировать по одинаковым нодам и начинать выделение с конца,
+            // т.е. последнего потенциально выжеденного слова в текстовой ноде
+            // Второй вариант - делать пересчет оффсетов при выделении слов в одной и той же ноде
+            // Плюс возникнет проблема при сохранении, т.к. если уже есть выделенные ноды,
+            // то оффсеты будут высчитываться относительно проапдейченого контента с выделениями,
+            // что НЕ есть гуд.
+            // Возможно нужно как-то сохранять копию оригинального контента???
+            // Или при ручном добавлении нового выделения - делать пересчет
+            // А при загрузке контента - начинать с конца - или тоже делать пересчет,
+            // если будет работать одинаково
+            // ! Если начинать с чистой базы и добавлять новые слова,
+            // ! тогда следующие слова запоминают свою позицию с учетом уже подсвеченых слов.
+            // ! Соответственно ничего больше делать не нужно,
+            // ! т.к. слова записываются в базу в нужно порядке!!!
+            // ! НО! есть проблема при удалении, нужно будет пересчитвыать позицию для nextSiblings
+            // ! т.к. их начальная позиция изменится при удалении выделения.
+            //
+            // if ((startNode.nodeValue?.length || 0) < startRange.offset) {
+            // 	return;
+            // }
+            // ! surroundContents() оборачивает только текстовые ноды.
+            // ! если выделение содержит несколько nodes, тогда метод выдает ошибку
+            // ! doesn't work - range.surroundContents(this.getWrapper());
+            // @see https://developer.mozilla.org/ru/docs/Web/API/Range/surroundContents
+            const newNode = this.getWrapper(id, translation);
+            newNode.appendChild(range.extractContents());
+            range.insertNode(newNode);
+        });
+    }
+    _createRange(start, end) {
+        const range = new Range();
+        range.setStart(start.node, start.offset);
+        range.setEnd(end.node, end.offset);
+        return range;
+    }
+    // private matchRangeWithSelectedText(selection: string, range: Range): boolean {
+    // }
+    getWrapper(id, translation) {
+        const span = document.createElement('span');
+        span.style.backgroundColor = '#ff9632';
+        span.id = id;
+        span.dataset.translation = translation;
+        span.classList.add('eng-saver__highlight-word');
+        return span;
+    }
+    queryTextNodes(parentCssSelector, childrenPaths) {
+        const parents = Array.from(document.querySelectorAll(parentCssSelector));
+        return parents.map((parent) => this.findChildrenNodesWithSelection(parent, childrenPaths));
+    }
+    findChildrenNodesWithSelection(parentElement, originPaths) {
+        const paths = [...originPaths];
+        const selector = paths.shift();
+        if (!selector) {
+            return parentElement;
+        }
+        const node = parentElement.childNodes[selector.index];
+        if (!node) {
+            return null;
+        }
+        if (selector.nodeName !== node.nodeName.toLowerCase()) {
+            return null;
+        }
+        return this.findChildrenNodesWithSelection(node, paths);
+    }
+}
+
+// CONCATENATED MODULE: ./src/app/services/saver/saver.service.ts
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class DataSaverService {
+    constructor(localDb, remoteDb) {
+        this.localDb = localDb;
+        this.remoteDb = remoteDb;
+    }
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const words = yield this.remoteDb.init();
+            this.localDb.saveInitData(words);
+            // TODO join local and remote db
+            return Object.keys(words).map((id) => {
+                return Object.assign({ id }, words[id]);
+            });
+        });
+    }
+    // findRemoteAndLocalDiffs(localData, remoteData) {
+    // 	const remoteValues = Object.values(remoteData);
+    // 	const localValues = Object.values(localData);
+    // 	const remoteDiff = [...remoteValues];
+    // 	const localDiff = localValues.filter((local) => {
+    // 		const key = remoteDiff.indexOf(local);
+    // 		if (-1 === key) {
+    // 			return true;
+    // 		}
+    // 		remoteDiff.splice(key, 1);
+    // 		return false;
+    // 	});
+    // 	return { remoteDiff, localDiff };
+    // }
+    hasWord(word) {
+        return this.localDb.hasWord(word);
+    }
+    addItem(rawWord) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = yield this.remoteDb.addItem(rawWord);
+            const word = Object.assign({ id }, rawWord);
+            this.localDb.addItem(id, word);
+            return word;
+        });
+    }
+    // ? This is simple implementation
+    // ? Need to remove highlighting
+    // ? Need to update css paths if selections has the same parent and
+    // ? selections locate in the same textNode in origin text
+    removeWord(wordId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (yield this.remoteDb.removeItem(wordId)) {
+                this.localDb.removeItem(wordId);
+            }
+        });
+    }
+    getWords() {
+        const data = this.localDb.getData();
+        return Object.values(data);
+    }
+}
+
+// CONCATENATED MODULE: ./src/app/services/local-db/local-db.service.ts
+var local_db_service_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _storageKey, _savedWords;
+class LocalDatabaseService {
+    constructor() {
+        _storageKey.set(this, 'english:words');
+        _savedWords.set(this, []);
+        // addWord(word, {context, offset, url, selector}, isLoaded = false) {
+        // 	let data = this.getWord(word);
+        // 	if (!data)
+        // 	{
+        // 		data = {
+        // 			word,
+        // 			contexts: [],
+        // 			isLoaded
+        // 		}
+        // 	}
+        // 	data.contexts.push({
+        // 		context,
+        // 		offset,
+        // 		url,
+        // 		selector,
+        // 	})
+        // 	this._setWord(word, data);
+        // }
+        // updateWordStatus( word, isLoaded ) {
+        // 	const data = this.getWord( word );
+        // 	data.isLoaded = isLoaded;
+        // 	this._setWord( word, data );
+        // }
+        // hasWord(word) {
+        // 	return this.cache.has(word);
+        // }
+        // getWords() {
+        // 	return this.cache;
+        // }
+        // getWord( word ) {
+        // 	return this.cache.get( word );
+        // }
+        // _setWord( word, data ) {
+        // 	this.cache.set( word, data );
+        // 	this._saveStorage();
+        // 	log2( 'SetWord', this.cache );
+        // }
+        // _saveStorage() {
+        // 	const object = Object.fromEntries(this.cache.entries());
+        // 	localStorage.setItem('english:words', JSON.stringify(object));
+        // }
+        // _loadCache() {
+        // 	const data = JSON.parse(localStorage.getItem('english:words'));
+        // 	if (!data) {
+        // 		return new Map();
+        // 	}
+        // 	let array = [];
+        // 	for (const key in data) {
+        // 		if (data.hasOwnProperty(key)) {
+        // 			array.push([key, data[key]]);
+        // 		}
+        // 	}
+        // 	return new Map(array);
+        // }
+    }
+    getInitData() {
+        const data = this.getData();
+        Object.values(data).forEach((word) => {
+            local_db_service_classPrivateFieldGet(this, _savedWords).push(word.selection);
+        });
+        return data;
+    }
+    saveInitData(rawData) {
+        Object.values(rawData).forEach((word) => {
+            if (local_db_service_classPrivateFieldGet(this, _savedWords).includes(word.selection)) {
+                return;
+            }
+            local_db_service_classPrivateFieldGet(this, _savedWords).push(word.selection);
+        });
+        let data = {};
+        for (const id in rawData) {
+            if (rawData.hasOwnProperty(id)) {
+                data[id] = Object.assign({ id }, rawData[id]);
+            }
+        }
+        this.saveData(data);
+    }
+    addItem(id, word) {
+        const data = this.getData();
+        data[id] = word;
+        local_db_service_classPrivateFieldGet(this, _savedWords).push(word.selection);
+        this.saveData(data);
+    }
+    saveData(data) {
+        localStorage.setItem(local_db_service_classPrivateFieldGet(this, _storageKey), JSON.stringify(data));
+    }
+    getData() {
+        var _a;
+        return JSON.parse((_a = localStorage.getItem(local_db_service_classPrivateFieldGet(this, _storageKey))) !== null && _a !== void 0 ? _a : '{}');
+    }
+    getWordById(id) {
+        const data = this.getData();
+        return data[id];
+    }
+    hasWord(word) {
+        return local_db_service_classPrivateFieldGet(this, _savedWords).includes(word);
+    }
+    removeItem(wordId) {
+        const data = this.getData();
+        delete data[wordId];
+        this.saveData(data);
+    }
+}
+_storageKey = new WeakMap(), _savedWords = new WeakMap();
 
 // EXTERNAL MODULE: ./node_modules/firebase/app/dist/index.cjs.js
 var index_cjs = __webpack_require__(3);
 
 // EXTERNAL MODULE: ./node_modules/@firebase/database/dist/index.cjs.js
-var dist_index_cjs = __webpack_require__(17);
+var dist_index_cjs = __webpack_require__(18);
 
 // CONCATENATED MODULE: ./node_modules/firebase/database/dist/index.esm.js
 
 //# sourceMappingURL=index.esm.js.map
 
 // EXTERNAL MODULE: ./node_modules/@firebase/auth/dist/auth.esm.js
-var auth_esm = __webpack_require__(19);
+var auth_esm = __webpack_require__(20);
 
 // CONCATENATED MODULE: ./node_modules/firebase/auth/dist/index.esm.js
 
@@ -20298,7 +20906,7 @@ var idb = __webpack_require__(10);
 
 
 var index_esm_name = "@firebase/installations";
-var version = "0.4.10";
+var version = "0.4.13";
 
 /**
  * @license
@@ -22156,7 +22764,7 @@ function factory(app, installations) {
 }
 
 var dist_index_esm_name = "@firebase/analytics";
-var index_esm_version = "0.3.5";
+var index_esm_version = "0.3.8";
 
 /**
  * @license
@@ -22216,7 +22824,7 @@ registerAnalytics(app_dist_index_cjs_default.a);
 //# sourceMappingURL=index.esm.js.map
 
 // CONCATENATED MODULE: ./src/app/services/firebase/firebase.service.ts
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+var firebase_service_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -22225,7 +22833,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+var firebase_service_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to get private field on non-instance");
     }
@@ -22251,17 +22859,17 @@ class firebase_service_FirebaseService {
     }
     // onAuthCallBack;
     init() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return firebase_service_awaiter(this, void 0, void 0, function* () {
             // init(onAuthCallBack) {
             // this.onAuthCallBack = onAuthCallBack;
-            console.log(index_cjs["initializeApp"](__classPrivateFieldGet(this, _options)));
+            console.log(index_cjs["initializeApp"](firebase_service_classPrivateFieldGet(this, _options)));
             console.log(index_cjs["analytics"]());
             return yield this.onAuth();
         });
     }
     registerUser(email, password) {
         var _a;
-        return __awaiter(this, void 0, void 0, function* () {
+        return firebase_service_awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield index_cjs["auth"]().createUserWithEmailAndPassword(email, password);
                 if (!((_a = user.user) === null || _a === void 0 ? void 0 : _a.uid)) {
@@ -22277,7 +22885,7 @@ class firebase_service_FirebaseService {
     }
     signInUser(email, password) {
         var _a;
-        return __awaiter(this, void 0, void 0, function* () {
+        return firebase_service_awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield index_cjs["auth"]().signInWithEmailAndPassword(email, password);
                 if (!((_a = user.user) === null || _a === void 0 ? void 0 : _a.uid)) {
@@ -22292,7 +22900,7 @@ class firebase_service_FirebaseService {
     }
     onAuth() {
         return new Promise((resolve, reject) => {
-            index_cjs["auth"]().onAuthStateChanged((user) => __awaiter(this, void 0, void 0, function* () {
+            index_cjs["auth"]().onAuthStateChanged((user) => firebase_service_awaiter(this, void 0, void 0, function* () {
                 if (!user) {
                     user = yield this.signInUser('admin@admin.com', 'admin123');
                 }
@@ -22309,7 +22917,7 @@ class firebase_service_FirebaseService {
     // 	return await firebase.database().ref('/words/' + id).once('value').val();
     // }
     logOut() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return firebase_service_awaiter(this, void 0, void 0, function* () {
             try {
                 index_cjs["auth"]().signOut();
             }
@@ -22320,7 +22928,7 @@ class firebase_service_FirebaseService {
     }
     addItem(item) {
         var _a;
-        return __awaiter(this, void 0, void 0, function* () {
+        return firebase_service_awaiter(this, void 0, void 0, function* () {
             if (!((_a = this.user) === null || _a === void 0 ? void 0 : _a.uid)) {
                 throw new Error('[FirebaseService.addItem] user.uid is undefined');
             }
@@ -22338,7 +22946,7 @@ class firebase_service_FirebaseService {
     }
     editItem(id, item) {
         var _a;
-        return __awaiter(this, void 0, void 0, function* () {
+        return firebase_service_awaiter(this, void 0, void 0, function* () {
             if (!((_a = this.user) === null || _a === void 0 ? void 0 : _a.uid)) {
                 throw new Error('[FirebaseService] user.uid is undefined');
             }
@@ -22352,7 +22960,7 @@ class firebase_service_FirebaseService {
         });
     }
     removeItem(id) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return firebase_service_awaiter(this, void 0, void 0, function* () {
             try {
                 yield index_cjs["database"]().ref('words').child(id).remove();
                 return true;
@@ -22363,11 +22971,11 @@ class firebase_service_FirebaseService {
         });
     }
     loadAll() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return firebase_service_awaiter(this, void 0, void 0, function* () {
             try {
                 let data = yield index_cjs["database"]().ref('words').once('value');
                 data = data.val();
-                return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                return new Promise((resolve) => firebase_service_awaiter(this, void 0, void 0, function* () {
                     yield index_cjs["database"]()
                         .ref('words')
                         .orderByChild('uri')
@@ -22394,547 +23002,30 @@ class firebase_service_FirebaseService {
 }
 _options = new WeakMap();
 
-// CONCATENATED MODULE: ./src/app/services/saver/saver.service.ts
-var saver_service_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-class DataSaverService {
-    constructor(localDb, remoteDb) {
-        this.localDb = localDb;
-        this.remoteDb = remoteDb;
-    }
-    init() {
-        return saver_service_awaiter(this, void 0, void 0, function* () {
-            const words = yield this.remoteDb.init();
-            this.localDb.saveInitData(words);
-            // TODO join local and remote db
-            return Object.keys(words).map((id) => {
-                return Object.assign({ id }, words[id]);
-            });
-        });
-    }
-    // findRemoteAndLocalDiffs(localData, remoteData) {
-    // 	const remoteValues = Object.values(remoteData);
-    // 	const localValues = Object.values(localData);
-    // 	const remoteDiff = [...remoteValues];
-    // 	const localDiff = localValues.filter((local) => {
-    // 		const key = remoteDiff.indexOf(local);
-    // 		if (-1 === key) {
-    // 			return true;
-    // 		}
-    // 		remoteDiff.splice(key, 1);
-    // 		return false;
-    // 	});
-    // 	return { remoteDiff, localDiff };
-    // }
-    hasWord(word) {
-        return this.localDb.hasWord(word);
-    }
-    addItem(word) {
-        return saver_service_awaiter(this, void 0, void 0, function* () {
-            const id = yield this.remoteDb.addItem(word);
-            this.localDb.addItem(id, word);
-            return id;
-        });
-    }
-    getWords() {
-        const data = this.localDb.getData();
-        return Object.values(data);
-    }
-}
+// CONCATENATED MODULE: ./src/app/databases.ts
 
-// CONCATENATED MODULE: ./src/app/services/local-db/local-db.service.ts
-var local_db_service_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+
+
+const remoteDb = new firebase_service_FirebaseService();
+const localDb = new LocalDatabaseService();
+const saver = new DataSaverService(localDb, remoteDb);
+
+
+// CONCATENATED MODULE: ./src/app/App.tsx
+var App_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to get private field on non-instance");
     }
     return privateMap.get(receiver);
 };
-var _storageKey, _savedWords;
-class LocalDatabaseService {
-    constructor() {
-        _storageKey.set(this, 'english:words');
-        _savedWords.set(this, []);
-        // addWord(word, {context, offset, url, selector}, isLoaded = false) {
-        // 	let data = this.getWord(word);
-        // 	if (!data)
-        // 	{
-        // 		data = {
-        // 			word,
-        // 			contexts: [],
-        // 			isLoaded
-        // 		}
-        // 	}
-        // 	data.contexts.push({
-        // 		context,
-        // 		offset,
-        // 		url,
-        // 		selector,
-        // 	})
-        // 	this._setWord(word, data);
-        // }
-        // updateWordStatus( word, isLoaded ) {
-        // 	const data = this.getWord( word );
-        // 	data.isLoaded = isLoaded;
-        // 	this._setWord( word, data );
-        // }
-        // hasWord(word) {
-        // 	return this.cache.has(word);
-        // }
-        // getWords() {
-        // 	return this.cache;
-        // }
-        // getWord( word ) {
-        // 	return this.cache.get( word );
-        // }
-        // _setWord( word, data ) {
-        // 	this.cache.set( word, data );
-        // 	this._saveStorage();
-        // 	log2( 'SetWord', this.cache );
-        // }
-        // _saveStorage() {
-        // 	const object = Object.fromEntries(this.cache.entries());
-        // 	localStorage.setItem('english:words', JSON.stringify(object));
-        // }
-        // _loadCache() {
-        // 	const data = JSON.parse(localStorage.getItem('english:words'));
-        // 	if (!data) {
-        // 		return new Map();
-        // 	}
-        // 	let array = [];
-        // 	for (const key in data) {
-        // 		if (data.hasOwnProperty(key)) {
-        // 			array.push([key, data[key]]);
-        // 		}
-        // 	}
-        // 	return new Map(array);
-        // }
-    }
-    getInitData() {
-        const data = this.getData();
-        Object.values(data).forEach((word) => {
-            local_db_service_classPrivateFieldGet(this, _savedWords).push(word.selection);
-        });
-        return data;
-    }
-    saveInitData(data) {
-        Object.values(data).forEach((word) => {
-            if (local_db_service_classPrivateFieldGet(this, _savedWords).includes(word.selection)) {
-                return;
-            }
-            local_db_service_classPrivateFieldGet(this, _savedWords).push(word.selection);
-        });
-        this.saveData(data);
-    }
-    addItem(id, word) {
-        const data = this.getData();
-        data[id] = word;
-        local_db_service_classPrivateFieldGet(this, _savedWords).push(word.selection);
-        this.saveData(data);
-    }
-    saveData(data) {
-        localStorage.setItem(local_db_service_classPrivateFieldGet(this, _storageKey), JSON.stringify(data));
-    }
-    getData() {
-        var _a;
-        return JSON.parse((_a = localStorage.getItem(local_db_service_classPrivateFieldGet(this, _storageKey))) !== null && _a !== void 0 ? _a : '{}');
-    }
-    getWordById(id) {
-        const data = this.getData();
-        return data[id];
-    }
-    hasWord(word) {
-        return local_db_service_classPrivateFieldGet(this, _savedWords).includes(word);
-    }
-}
-_storageKey = new WeakMap(), _savedWords = new WeakMap();
-
-// EXTERNAL MODULE: ./src/app/components/SelectionToast/SelectionToast.scss
-var SelectionToast_SelectionToast = __webpack_require__(20);
-
-// CONCATENATED MODULE: ./src/app/components/SelectionToast/SelectionToast.tsx
-
-
-class SelectionToast_SelectionToast_SelectionToast extends react["Component"] {
-    render() {
-        const { toast, saveCloseToast, cancel } = this.props;
-        return (react_default.a.createElement("div", { className: "eng-saver__toast" },
-            react_default.a.createElement("div", { className: "eng-saver__context" }, toast),
-            react_default.a.createElement("button", { type: "button", onClick: saveCloseToast }, "Save & Close"),
-            react_default.a.createElement("button", { type: "button", onClick: cancel }, "Cancel")));
-    }
-}
-
-// CONCATENATED MODULE: ./src/app/services/node-css-path/node-css-path.service.ts
-var node_css_path_service_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
-};
-var _blockTags, _nonBlockTagsLimit, _cssSelectorDepth, _cssSelectorsDivider;
-class NodeCssPath {
-    constructor() {
-        _blockTags.set(this, /^(div|li|p|body)$/); // start with (^) + end on ($)
-        _nonBlockTagsLimit.set(this, 10);
-        _cssSelectorDepth.set(this, 3);
-        _cssSelectorsDivider.set(this, ' ');
-    }
-    // startSelectionTextNodeNumber
-    // endSelectionTextNodeNumber
-    // startOffset
-    // endOffset
-    // parent selector
-    getPath(node) {
-        const childrenNodesPaths = this.getChildrenNodesPaths(node);
-        const innerElements = childrenNodesPaths.length - 1; // minus #text
-        const cssParentSelector = this.getParentCssSelector(node, innerElements + node_css_path_service_classPrivateFieldGet(this, _cssSelectorDepth));
-        const cssAncestorsArray = cssParentSelector.split(node_css_path_service_classPrivateFieldGet(this, _cssSelectorsDivider));
-        const selectors = cssAncestorsArray
-            .slice(0, cssAncestorsArray.length - innerElements)
-            .join(node_css_path_service_classPrivateFieldGet(this, _cssSelectorsDivider));
-        return {
-            childrenNodesPaths,
-            cssParentSelector: selectors
-        };
-    }
-    getChildrenNodesPaths(originNode, limit = node_css_path_service_classPrivateFieldGet(this, _nonBlockTagsLimit)) {
-        let node = originNode;
-        let result = [];
-        while (true) {
-            if (this.isBlockTag(node)) {
-                break;
-            }
-            result.push(this.getChildPath(node));
-            limit--;
-            if (0 === limit) {
-                throw new Error(`[NodeCssPath.getNumbersInParentsNodesUntilBlockTag] There isn't block tags in ${limit} ancestors`);
-            }
-            node = this.getParentElement(node);
-        }
-        return result.reverse();
-    }
-    getChildPath(childNode) {
-        let counter = 0;
-        let node = childNode;
-        while (true) {
-            if (!node.previousSibling) {
-                break;
-            }
-            node = node.previousSibling;
-            counter++;
-        }
-        return {
-            // ! I don't know about that all browsers have the same nodeName of TEXT_NODE
-            // ! in FireFox and Chrome it's #text
-            nodeName: childNode.nodeName.toLowerCase(),
-            index: counter
-        };
-    }
-    getParentCssSelector(node, depth = node_css_path_service_classPrivateFieldGet(this, _cssSelectorDepth), cssSelectors = []) {
-        const parent = this.getParentElement(node);
-        const selector = this.getElementCssSelector(parent);
-        cssSelectors.push(selector);
-        if (parent.id) {
-            return this.getHierarchyCssSelector(cssSelectors);
-        }
-        depth--;
-        if (0 === depth) {
-            return this.getHierarchyCssSelector(cssSelectors);
-        }
-        return this.getParentCssSelector(parent, depth, cssSelectors);
-    }
-    hasTextNote(element) {
-        return element.childNodes.length > 0;
-    }
-    isBlockTag(node) {
-        return node_css_path_service_classPrivateFieldGet(this, _blockTags).test(node.nodeName.toLowerCase() || 'noop');
-    }
-    // private isParentBlockTag(textNode: Node) {
-    // 	return this.#blockTags.test(this.getParentElement(textNode).tagName.toLowerCase() || 'noop');
-    // }
-    getElementCssSelector(element) {
-        const id = this.getElementIdCssSelector(element);
-        if (id) {
-            return id;
-        }
-        const selector = this.getElementClassCssSelector(element) || element.tagName.toLowerCase();
-        const index = this.getElementIndexInParent(element);
-        // -1 for <html>
-        if (-1 === index || 'body' === selector) {
-            return selector;
-        }
-        return `${selector}:nth-child(${index + 1})`;
-    }
-    getElementIdCssSelector(element) {
-        return element.id ? `#${element.id}` : null;
-    }
-    getElementClassCssSelector(element) {
-        const classes = element.className;
-        return classes ? `.${classes.split(' ').join('.')}` : null;
-    }
-    getElementIndexInParent(element) {
-        const parent = this.getParentElement(element);
-        return Array.from(parent.children).indexOf(element);
-    }
-    // selector[0] - parent
-    // selector[1] - child
-    // expected queue: 'parent > child'
-    getHierarchyCssSelector(selectors) {
-        return selectors.reverse().join(node_css_path_service_classPrivateFieldGet(this, _cssSelectorsDivider));
-    }
-    // <html> doesn't have parent element
-    // so to avoid checking of NULL every where
-    // I will return body element if parentElement doesn't exist
-    getParentElement(node) {
-        return node.parentElement || document.body;
-    }
-}
-_blockTags = new WeakMap(), _nonBlockTagsLimit = new WeakMap(), _cssSelectorDepth = new WeakMap(), _cssSelectorsDivider = new WeakMap();
-
-// CONCATENATED MODULE: ./src/app/services/select-word/select-word.service.ts
-/**
- * Classes
- * 1) Get context sentense
- * 2) get selection path to save it
- */
-
-const nodepath = new NodeCssPath();
-class SelectWord {
-    // TODO: format selection
-    constructor(selection, range) {
-        this.selection = selection;
-        this.range = range;
-        this.translation = '';
-        const { startOffset, endOffset, startContainer, endContainer } = this.range;
-        this.startOffset = startOffset;
-        this.endOffset = endOffset;
-        this.startContainer = startContainer;
-        this.endContainer = endContainer;
-    }
-    addTranslation(text) {
-        this.translation = text;
-    }
-    getData() {
-        return {
-            selection: this.selection,
-            originWord: this.selection,
-            context: '',
-            startRange: Object.assign(Object.assign({}, nodepath.getPath(this.startContainer)), { offset: this.startOffset }),
-            endRange: Object.assign(Object.assign({}, nodepath.getPath(this.endContainer)), { offset: this.endOffset }),
-            translation: this.translation,
-            uri: window.location.href
-        };
-    }
-}
-
-// CONCATENATED MODULE: ./src/app/services/selection-handler/selection-handler.service.ts
-var selection_handler_service_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
-};
-var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+var App_classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to set private field on non-instance");
     }
     privateMap.set(receiver, value);
     return value;
 };
-var _selectionTimeout, _runOnSelect;
-
-class selection_handler_service_SelectionHandler {
-    constructor() {
-        _selectionTimeout.set(this, void 0);
-        _runOnSelect.set(this, (wordData) => { });
-        this.addEventListener(document, window);
-        // listen events in all iframes
-        document.querySelectorAll('iframe').forEach((iframe) => {
-            if (iframe.contentDocument && iframe.contentWindow) {
-                this.addEventListener(iframe.contentDocument, iframe.contentWindow);
-            }
-        });
-    }
-    addEventListener(document, window) {
-        document === null || document === void 0 ? void 0 : document.addEventListener('selectionchange', () => {
-            this.handleEvent(window);
-        });
-    }
-    handleEvent(window) {
-        var _a;
-        const selection = window.getSelection();
-        console.log(`[SelectionHandler.handleEvent] Selection started`, selection);
-        if (!selection) {
-            return;
-        }
-        if ('Range' !== selection.type) {
-            return;
-        }
-        const range = selection.getRangeAt(0);
-        if (!((_a = range.commonAncestorContainer.classList) === null || _a === void 0 ? void 0 : _a.contains('jfk-bubble-content-id'))) {
-            this.selection = new SelectWord(selection.toString(), range);
-            console.log(`[SelectionHandler.handleEvent] Selection saved: ${selection.toString()}`);
-            return;
-        }
-        if (selection_handler_service_classPrivateFieldGet(this, _selectionTimeout)) {
-            clearTimeout(selection_handler_service_classPrivateFieldGet(this, _selectionTimeout));
-        }
-        // ! TODO: Find a solution to resolve typings conflict for setTimeout()
-        // ! I don't know how to resolve .d.ts conflict between dom.d.ts and @node
-        // ! They have different declaration of setTimeout
-        // ! Check branch jest-1!
-        // @ts-ignore
-        // this.#selectionTimeout = setTimeout(() => {
-        if (this.selection) {
-            this.selection.addTranslation(selection.toString());
-            selection_handler_service_classPrivateFieldGet(this, _runOnSelect).call(this, this.selection.getData());
-        }
-        // const sentence = engSelection.getSentence();
-        // const word = engSelection.getSelectionObject().word;
-        // if (saver.hasWord(word)) {
-        // 	list.highlightItem(word);
-        // }
-        // toast.context(sentence);
-        // toast.show();
-        // }, 1000);
-    }
-    onSelect(callback) {
-        __classPrivateFieldSet(this, _runOnSelect, callback);
-    }
-}
-_selectionTimeout = new WeakMap(), _runOnSelect = new WeakMap();
-
-// CONCATENATED MODULE: ./src/app/services/highlighter/highlighter.service.ts
-class Highlighter {
-    getValidNodes(startPath, endPath) {
-        const startNodes = this.queryTextNodes(startPath.cssParentSelector, startPath.childrenNodesPaths);
-        const endNodes = this.queryTextNodes(endPath.cssParentSelector, endPath.childrenNodesPaths);
-        if (startNodes.length !== endNodes.length) {
-            console.warn('[Highlighter.getValidNodes] startNodes.length !== endNodes.length');
-            return null;
-        }
-        const results = startNodes
-            .map((startNode, key) => {
-            const endNode = endNodes[key];
-            if (!startNode) {
-                return;
-            }
-            if (!endNode) {
-                return;
-            }
-            return { startNode, endNode };
-        })
-            .filter(Boolean);
-        return results;
-    }
-    highlight(word) {
-        const { id: _id, translation, startRange, endRange } = word;
-        const validNodes = this.getValidNodes(startRange, endRange);
-        const id = _id;
-        if (!validNodes) {
-            return;
-        }
-        validNodes.forEach(({ startNode, endNode }) => {
-            // ts doesn't react on condition outside the loop
-            if (!startRange.offset) {
-                console.warn('[Highlighter.highlight] startRange.offset is undefined');
-                return null;
-            }
-            if (!endRange.offset) {
-                console.warn('[Highlighter.highlight] endRange.offset is undefined');
-                return null;
-            }
-            if (startNode.nodeValue && startNode.nodeValue.length < startRange.offset) {
-                console.warn('[Highlighter.highlight] startOffest > nodeValue.length');
-                return;
-            }
-            const start = {
-                node: startNode,
-                offset: startRange.offset
-            };
-            const end = {
-                node: endNode,
-                // ts doesn't react on condition above about offset so I set unreal offset
-                offset: endRange.offset || 9999
-            };
-            const range = this._createRange(start, end);
-            // есть ошибка со словами, которые должны выделиться, когда они стоят после УЖЕ выделенного слова
-            // Один вариант решения - сортировать по одинаковым нодам и начинать выделение с конца,
-            // т.е. последнего потенциально выжеденного слова в текстовой ноде
-            // Второй вариант - делать пересчет оффсетов при выделении слов в одной и той же ноде
-            // Плюс возникнет проблема при сохранении, т.к. если уже есть выделенные ноды,
-            // то оффсеты будут высчитываться относительно проапдейченого контента с выделениями,
-            // что НЕ есть гуд.
-            // Возможно нужно как-то сохранять копию оригинального контента???
-            // Или при ручном добавлении нового выделения - делать пересчет
-            // А при загрузке контента - начинать с конца - или тоже делать пересчет,
-            // если будет работать одинаково
-            // ! Если начинать с чистой базы и добавлять новые слова,
-            // ! тогда следующие слова запоминают свою позицию с учетом уже подсвеченых слов.
-            // ! Соответственно ничего больше делать не нужно,
-            // ! т.к. слова записываются в базу в нужно порядке!!!
-            // ! НО! есть проблема при удалении, нужно будет пересчитвыать позицию для nextSiblings
-            // ! т.к. их начальная позиция изменится при удалении выделения.
-            //
-            // if ((startNode.nodeValue?.length || 0) < startRange.offset) {
-            // 	return;
-            // }
-            // ! surroundContents() оборачивает только текстовые ноды.
-            // ! если выделение содержит несколько nodes, тогда метод выдает ошибку
-            // ! doesn't work - range.surroundContents(this.getWrapper());
-            // @see https://developer.mozilla.org/ru/docs/Web/API/Range/surroundContents
-            const newNode = this.getWrapper(id, translation);
-            newNode.appendChild(range.extractContents());
-            range.insertNode(newNode);
-        });
-    }
-    _createRange(start, end) {
-        const range = new Range();
-        range.setStart(start.node, start.offset);
-        range.setEnd(end.node, end.offset);
-        return range;
-    }
-    // private matchRangeWithSelectedText(selection: string, range: Range): boolean {
-    // }
-    getWrapper(id, translation) {
-        const span = document.createElement('span');
-        span.style.backgroundColor = '#ff9632';
-        span.id = id;
-        span.dataset.translation = translation;
-        span.classList.add('eng-saver__highlight-word');
-        return span;
-    }
-    queryTextNodes(parentCssSelector, childrenPaths) {
-        const parents = Array.from(document.querySelectorAll(parentCssSelector));
-        return parents.map((parent) => this.findChildrenNodesWithSelection(parent, childrenPaths));
-    }
-    findChildrenNodesWithSelection(parentElement, originPaths) {
-        const paths = [...originPaths];
-        const selector = paths.shift();
-        if (!selector) {
-            return parentElement;
-        }
-        const node = parentElement.childNodes[selector.index];
-        if (!node) {
-            return null;
-        }
-        if (selector.nodeName !== node.nodeName.toLowerCase()) {
-            return null;
-        }
-        return this.findChildrenNodesWithSelection(node, paths);
-    }
-}
-
-// CONCATENATED MODULE: ./src/app/App.tsx
-
-
+var _word;
 
 
 
@@ -22942,9 +23033,6 @@ class Highlighter {
 
 
 // import '../styles/App.css';
-const remoteDb = new firebase_service_FirebaseService();
-const localDb = new LocalDatabaseService();
-const saver = new DataSaverService(localDb, remoteDb);
 const selectionHandler = new selection_handler_service_SelectionHandler();
 const highlighter = new Highlighter();
 class App_App extends react["Component"] {
@@ -22955,18 +23043,17 @@ class App_App extends react["Component"] {
             toast: null,
             hideLoadedMessage: false
         };
-        this.word = null;
+        _word.set(this, null);
         this.saveCloseToast = () => {
-            if (!this.word) {
+            const rawWord = this.getWord();
+            if (!rawWord) {
                 alert('No selected word!');
                 this.cancel();
                 return;
             }
-            const word = Object.assign({}, this.word);
-            console.log(`[AppSaver] selection is saving:`, word);
-            saver.addItem(word)
-                .then((id) => {
-                word.id = id;
+            console.log(`[AppSaver] selection is saving:`, rawWord);
+            saver.addItem(rawWord)
+                .then((word) => {
                 this.setState({
                     words: [
                         ...this.state.words,
@@ -22975,13 +23062,21 @@ class App_App extends react["Component"] {
                 });
                 this.cancel();
                 highlighter.highlight(word);
-                console.log(`[AppSaver] selection saved and highlighted:`, word);
+                console.log(`[AppSaver] selection saved and highlighted:`, rawWord);
             });
         };
         this.cancel = () => {
-            this.word = null;
+            this.setWord(null);
             this.setState({
                 toast: null
+            });
+        };
+        this.removeItem = (wordId) => {
+            saver.removeWord(wordId)
+                .then(() => {
+                this.setState({
+                    words: saver.getWords()
+                });
             });
         };
         this.initDb();
@@ -22990,7 +23085,7 @@ class App_App extends react["Component"] {
     render() {
         const { words, toast, hideLoadedMessage } = this.state;
         return (react_default.a.createElement(react_default.a.Fragment, null,
-            react_default.a.createElement(WordsList_WordsList_WordsList, { words: words }),
+            react_default.a.createElement(WordsList_WordsList_WordsList, { words: words, removeItem: this.removeItem }),
             toast ? react_default.a.createElement(SelectionToast_SelectionToast_SelectionToast, { toast: toast, saveCloseToast: this.saveCloseToast, cancel: this.cancel }) : null,
             !hideLoadedMessage && this.runTimer() ? react_default.a.createElement("span", { className: "eng-saver__loaded" }, "Loaded") : ''));
     }
@@ -23013,13 +23108,20 @@ class App_App extends react["Component"] {
         });
     }
     onSelectWord(wordData) {
-        this.word = wordData;
+        this.setWord(wordData);
         this.saveCloseToast();
         // this.setState({
         // 	toast: wordData.selection
         // });
     }
+    getWord() {
+        return App_classPrivateFieldGet(this, _word);
+    }
+    setWord(word) {
+        App_classPrivateFieldSet(this, _word, word);
+    }
 }
+_word = new WeakMap();
 
 // CONCATENATED MODULE: ./src/main.tsx
 

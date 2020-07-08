@@ -5,7 +5,7 @@
  */
 
 import { NodeCssPath } from "../node-css-path/node-css-path.service";
-import { Word } from "../../models/word.model";
+import { RawWord } from "../../models/word.model";
 
 const nodepath = new NodeCssPath();
 
@@ -30,7 +30,7 @@ export class SelectWord {
 		this.translation = text;
 	}
 
-	getData(): Word {
+	getData(): RawWord {
 		return {
 			selection: this.selection,
 			originWord: this.selection,

@@ -2,8 +2,8 @@ import * as firebase from 'firebase/app';
 import 'firebase/database';
 import 'firebase/auth';
 import 'firebase/analytics';
-import { WordsDatabase } from '../../models/words-database.model';
-import { Word } from '../../models/word.model';
+import { RawWordsDatabase } from '../../models/words-database.model';
+import { Word, RawWord } from '../../models/word.model';
 
 export class FirebaseService {
 	readonly #options = {
@@ -60,7 +60,7 @@ export class FirebaseService {
 		}
 	}
 
-	private onAuth(): Promise<WordsDatabase> {
+	private onAuth(): Promise<RawWordsDatabase> {
 		return new Promise((resolve, reject) => {
 			firebase.auth().onAuthStateChanged(async (user) => {
 				if (!user) {
@@ -93,7 +93,7 @@ export class FirebaseService {
 		}
 	}
 
-	async addItem(item: Word): Promise<string> {
+	async addItem(item: RawWord): Promise<string> {
 		if (!this.user?.uid) {
 			throw new Error('[FirebaseService.addItem] user.uid is undefined');
 		}
@@ -138,7 +138,7 @@ export class FirebaseService {
 		}
 	}
 
-	private async loadAll(): Promise<WordsDatabase> {
+	private async loadAll(): Promise<RawWordsDatabase> {
 		try {
 			let data = await firebase.database().ref('words').once('value');
 			data = data.val();

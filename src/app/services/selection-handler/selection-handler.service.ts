@@ -1,11 +1,11 @@
 import { SelectWord } from "../select-word/select-word.service";
-import { Word } from "../../models/word.model";
+import { Word, RawWord } from "../../models/word.model";
 
-type RunOnSelect = (wordData: Word) => void;
+type RunOnSelect = (wordData: RawWord) => void;
 
 export class SelectionHandler {
 	#selectionTimeout: number | undefined;
-	#runOnSelect = (wordData: Word): void => {}
+	#runOnSelect = (wordData: RawWord): void => {}
 
 	private selection: SelectWord | undefined;
 
@@ -34,7 +34,7 @@ export class SelectionHandler {
 		if (!selection) {
 			return;
 		}
-		
+
 		if ('Range' !== selection.type) {
 			return;
 		}
@@ -44,7 +44,7 @@ export class SelectionHandler {
 		if (!(range.commonAncestorContainer as Element).classList?.contains('jfk-bubble-content-id')) {
 			this.selection = new SelectWord(selection.toString(), range);
 			console.log(`[SelectionHandler.handleEvent] Selection saved: ${selection.toString()}`);
-			
+
 			return;
 		}
 
@@ -57,12 +57,13 @@ export class SelectionHandler {
 		// ! They have different declaration of setTimeout
 		// ! Check branch jest-1!
 		// @ts-ignore
-		// this.#selectionTimeout = setTimeout(() => {
-		if (this.selection) {
-			this.selection.addTranslation(selection.toString());
+		this.#selectionTimeout = setTimeout(() => {
+			// timeout resolves selection of several words by mouse
+			if (this.selection) {
+				this.selection.addTranslation(selection.toString());
 
-			this.#runOnSelect(this.selection.getData());
-		}
+				this.#runOnSelect(this.selection.getData());
+			}
 
 			// const sentence = engSelection.getSentence();
 			// const word = engSelection.getSelectionObject().word;
@@ -74,7 +75,7 @@ export class SelectionHandler {
 
 			// toast.context(sentence);
 			// toast.show();
-		// }, 1000);
+		}, 500);
 	}
 
 	onSelect(callback: RunOnSelect) {
