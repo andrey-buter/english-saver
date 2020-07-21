@@ -55,14 +55,15 @@ export class Highlighter {
 			return;
 		}
 
+		// ! TODO: test startRange.offset = 0
 		validNodes.forEach(({ startNode, endNode }) => {
 			// ts doesn't react on condition outside the loop
-			if (!startRange.offset) {
+			if (!startRange.offset && startRange.offset != 0) {
 				console.warn('[Highlighter.highlight] startRange.offset is undefined');
 				return null;
 			}
 
-			if (!endRange.offset) {
+			if (!endRange.offset && endRange.offset != 0) {
 				console.warn('[Highlighter.highlight] endRange.offset is undefined');
 				return null;
 			}
@@ -141,10 +142,26 @@ export class Highlighter {
 		return span;
 	}
 
+	// ! TODO: add a test with unusual Id, such as on medium.com "#33rd"
 	private queryTextNodes(parentCssSelector: string, childrenPaths: ChildNodePath[]) {
-		const parents = Array.from(document.querySelectorAll(parentCssSelector));
+		let parents: Element[] = [];
+		if (this.isId(parentCssSelector)) {
+			const el = document.getElementById(parentCssSelector.replace('#', ''));
+
+			if (el) {
+				parents = [el];
+			} else {
+				console.warn(`[Highlighter.queryTextNodes] Id isn't correct "${parentCssSelector}"`);
+			}
+		} else {
+			parents = Array.from(document.querySelectorAll(parentCssSelector));
+		}
 
 		return parents.map((parent) => this.findChildrenNodesWithSelection(parent, childrenPaths));
+	}
+
+	private isId(string: string) {
+		return string.includes('#');
 	}
 
 	private findChildrenNodesWithSelection(parentElement: Node, originPaths: ChildNodePath[]): Node | null {
