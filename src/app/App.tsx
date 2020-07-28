@@ -39,7 +39,7 @@ export default class App extends Component<{}, State> {
 
 		return (
 			<>
-				<WordsList words={words} removeItem={this.removeItem}></WordsList>
+				<WordsList words={words} removeItem={this.removeItem} refresh={this.refresh}></WordsList>
 				{toast ? <SelectionToast toast={toast} saveCloseToast={this.saveCloseToast} cancel={this.cancel}></SelectionToast> : null }
 				{!hideLoadedMessage && this.runTimer() ? <span className="eng-saver__loaded">Loaded</span> : ''}
 			</>
@@ -97,6 +97,12 @@ export default class App extends Component<{}, State> {
 					words: saver.getWords()
 				});
 			})
+	}
+
+	refresh = (): void => {
+		this.state.words.forEach((word) => {
+			word?.id && highlighter.highlight(word);
+		});
 	}
 
 	private initDb() {

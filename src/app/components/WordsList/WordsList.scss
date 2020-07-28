@@ -1,4 +1,6 @@
 .eng-saver__words-list {
+	$t: &;
+
 	position: fixed;
 	bottom: 100px;
 	right: 10px;
@@ -12,24 +14,40 @@
 	justify-content: center;
 	font-family: Arial;
 
-	li {
+	li,
+	&-css-path {
 		box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px;
 		border: 1px solid rgb(187, 187, 187);
 		padding: 5px;
-		margin-bottom: 5px;
 		border-radius: 3px;
 		background: #fff;
+	}
+
+	li {
+		margin-bottom: 5px;
 		display: flex;
 		align-items: center;
+		position: relative;
+
+		&:last-child {
+			padding: 0;
+		}
 
 		&.highlighted {
 			border-color: red;
 		}
 
 		button {
+			cursor: pointer;
+			background-color: lightgray;
+			border: none;
+			color: #000;
+			padding: 3px;
+		}
+
+		#{$t}-remove {
 			display: none;
 			margin-left: 5px;
-			cursor: pointer;
 			padding: 5px;
 			background: red;
 			border: none;
@@ -41,8 +59,24 @@
 			font-size: 12px;
 		}
 
+		input[type=checkbox] {
+			position: absolute;
+			width: 0;
+			height: 0;
+			opacity: 0;
+			z-index: -1;
+
+			&:checked + #{$t}-css-path {
+				display: block;
+			}
+		}
+
 		&:hover {
-			button {
+			#{$t}-remove {
+				display: block;
+			}
+
+			#{$t}-css-path {
 				display: block;
 			}
 		}
@@ -50,5 +84,14 @@
 
 	&-translation {
 		font-size: 10px;
+	}
+
+	&-css-path {
+		display: none;
+		position: absolute;
+		right: calc(100% + 10px);
+		top: 50%;
+		transform: translateY(-50%);
+		white-space: nowrap;
 	}
 }
