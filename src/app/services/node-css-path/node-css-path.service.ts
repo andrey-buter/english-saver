@@ -4,8 +4,18 @@ import { NodePath } from "../../models/node-path.model";
 export class NodeCssPath {
 	#blockTags = /^(div|li|p|body)$/ ; // start with (^) + end on ($)
 	#nonBlockTagsLimit = 10;
-	#cssSelectorDepth = 3;
 	#cssSelectorsDivider = ' ';
+
+	#cssSelectorDepthByHostname: { [key: string]: number } = {
+		'bitbucket.org': 5,
+		default: +(<any>window).CSS_SELECTOR_DEPTH ?? 3
+	}
+
+	get cssSelectorDepth() {
+		const depth = this.#cssSelectorDepthByHostname[window.location.hostname];
+
+		return depth ?? this.#cssSelectorDepthByHostname.default;
+	}
 
 	// startSelectionTextNodeNumber
 	// endSelectionTextNodeNumber
@@ -16,7 +26,7 @@ export class NodeCssPath {
 	getPath(node: Node): NodePath {
 		const childrenNodesPaths = this.getChildrenNodesPaths(node);
 		const innerElements = childrenNodesPaths.length - 1; // minus #text
-		const cssParentSelector = this.getParentCssSelector(node, innerElements + this.#cssSelectorDepth);
+		const cssParentSelector = this.getParentCssSelector(node, innerElements + this.cssSelectorDepth);
 
 		const cssAncestorsArray = cssParentSelector.split(this.#cssSelectorsDivider);
 		const selectors = cssAncestorsArray
@@ -72,7 +82,7 @@ export class NodeCssPath {
 		}
 	}
 
-	private getParentCssSelector(node: Node, depth = this.#cssSelectorDepth, cssSelectors: string[] = []): string {
+	private getParentCssSelector(node: Node, depth = this.cssSelectorDepth, cssSelectors: string[] = []): string {
 		const parent = this.getParentElement(node);
 		const selector = this.getElementCssSelector(parent);
 

@@ -98,7 +98,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__metadata", function() { return __metadata; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__awaiter", function() { return __awaiter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__generator", function() { return __generator; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__createBinding", function() { return __createBinding; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__exportStar", function() { return __exportStar; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__values", function() { return __values; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__read", function() { return __read; });
@@ -114,18 +113,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldGet", function() { return __classPrivateFieldGet; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldSet", function() { return __classPrivateFieldSet; });
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation.
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
 
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
 
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
@@ -218,13 +217,8 @@ function __generator(thisArg, body) {
     }
 }
 
-function __createBinding(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}
-
 function __exportStar(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) exports[p] = m[p];
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 
 function __values(o) {
@@ -377,7 +371,7 @@ var ERRORS = (_a = {},
 var ERROR_FACTORY = new util.ErrorFactory('app', 'Firebase', ERRORS);
 
 var name$1 = "@firebase/app";
-var version = "0.6.7";
+var version = "0.6.4";
 
 var name$2 = "@firebase/analytics";
 
@@ -611,7 +605,7 @@ var FirebaseAppImpl = /** @class */ (function () {
     FirebaseAppImpl.prototype.delete ||
     console.log('dc');
 
-var version$1 = "7.15.5";
+var version$1 = "7.14.5";
 
 /**
  * @license
@@ -1038,7 +1032,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var firebase = _interopDefault(__webpack_require__(1));
 
 var name = "firebase";
-var version = "7.15.5";
+var version = "7.14.6";
 
 /**
  * @license
@@ -1666,12 +1660,6 @@ function isUWP() {
 function isNodeSdk() {
     return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
 }
-/** Returns true if we are running in Safari. */
-function isSafari() {
-    return (!isNode() &&
-        navigator.userAgent.includes('Safari') &&
-        !navigator.userAgent.includes('Chrome'));
-}
 
 /**
  * @license
@@ -1747,7 +1735,7 @@ var ErrorFactory = /** @class */ (function () {
 function replaceTemplate(template, data) {
     return template.replace(PATTERN, function (_, key) {
         var value = data[key];
-        return value != null ? String(value) : "<" + key + "?>";
+        return value != null ? value.toString() : "<" + key + "?>";
     });
 }
 var PATTERN = /\{\$([^}]+)}/g;
@@ -2703,7 +2691,6 @@ exports.isMobileCordova = isMobileCordova;
 exports.isNode = isNode;
 exports.isNodeSdk = isNodeSdk;
 exports.isReactNative = isReactNative;
-exports.isSafari = isSafari;
 exports.isUWP = isUWP;
 exports.isValidFormat = isValidFormat;
 exports.isValidTimestamp = isValidTimestamp;
@@ -3200,17 +3187,13 @@ var Logger = /** @class */ (function () {
         },
         set: function (val) {
             if (!(val in LogLevel)) {
-                throw new TypeError("Invalid value \"" + val + "\" assigned to `logLevel`");
+                throw new TypeError('Invalid value assigned to `logLevel`');
             }
             this._logLevel = val;
         },
         enumerable: true,
         configurable: true
     });
-    // Workaround for setter/getter having to be the same type.
-    Logger.prototype.setLogLevel = function (val) {
-        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
-    };
     Object.defineProperty(Logger.prototype, "logHandler", {
         get: function () {
             return this._logHandler;
@@ -3280,8 +3263,9 @@ var Logger = /** @class */ (function () {
     return Logger;
 }());
 function setLogLevel(level) {
+    var newLevel = typeof level === 'string' ? levelStringToEnum[level] : level;
     instances.forEach(function (inst) {
-        inst.setLogLevel(level);
+        inst.logLevel = newLevel;
     });
 }
 function setUserLogHandler(logCallback, options) {
@@ -5317,7 +5301,6 @@ var REFERER_PARAM = 'r';
 var FORGE_REF = 'f';
 var FORGE_DOMAIN = 'firebaseio.com';
 var LAST_SESSION_PARAM = 'ls';
-var APPLICATION_ID_PARAM = 'p';
 var WEBSOCKET = 'websocket';
 var LONG_POLLING = 'long_polling';
 
@@ -14278,18 +14261,16 @@ var LP_CONNECT_TIMEOUT = 30000;
  */
 var BrowserPollConnection = /** @class */ (function () {
     /**
-     * @param connId An identifier for this connection, used for logging
-     * @param repoInfo The info for the endpoint to send data to.
-     * @param applicationId The Firebase App ID for this project.
-     * @param transportSessionId Optional transportSessionid if we are reconnecting for an existing
+     * @param {string} connId An identifier for this connection, used for logging
+     * @param {RepoInfo} repoInfo The info for the endpoint to send data to.
+     * @param {string=} transportSessionId Optional transportSessionid if we are reconnecting for an existing
      *                                         transport session
-     * @param lastSessionId Optional lastSessionId if the PersistentConnection has already created a
+     * @param {string=}  lastSessionId Optional lastSessionId if the PersistentConnection has already created a
      *                                     connection previously
      */
-    function BrowserPollConnection(connId, repoInfo, applicationId, transportSessionId, lastSessionId) {
+    function BrowserPollConnection(connId, repoInfo, transportSessionId, lastSessionId) {
         this.connId = connId;
         this.repoInfo = repoInfo;
-        this.applicationId = applicationId;
         this.transportSessionId = transportSessionId;
         this.lastSessionId = lastSessionId;
         this.bytesSent = 0;
@@ -14388,9 +14369,6 @@ var BrowserPollConnection = /** @class */ (function () {
             }
             if (_this.lastSessionId) {
                 urlParams[LAST_SESSION_PARAM] = _this.lastSessionId;
-            }
-            if (_this.applicationId) {
-                urlParams[APPLICATION_ID_PARAM] = _this.applicationId;
             }
             if (typeof location !== 'undefined' &&
                 location.href &&
@@ -14906,16 +14884,14 @@ else if (typeof WebSocket !== 'undefined') {
  */
 var WebSocketConnection = /** @class */ (function () {
     /**
-     * @param connId identifier for this transport
-     * @param repoInfo The info for the websocket endpoint.
-     * @param applicationId The Firebase App ID for this project.
-     * @param transportSessionId Optional transportSessionId if this is connecting to an existing transport
+     * @param {string} connId identifier for this transport
+     * @param {RepoInfo} repoInfo The info for the websocket endpoint.
+     * @param {string=} transportSessionId Optional transportSessionId if this is connecting to an existing transport
      *                                         session
-     * @param lastSessionId Optional lastSessionId if there was a previous connection
+     * @param {string=} lastSessionId Optional lastSessionId if there was a previous connection
      */
-    function WebSocketConnection(connId, repoInfo, applicationId, transportSessionId, lastSessionId) {
+    function WebSocketConnection(connId, repoInfo, transportSessionId, lastSessionId) {
         this.connId = connId;
-        this.applicationId = applicationId;
         this.keepaliveTimer = null;
         this.frames = null;
         this.totalFrames = 0;
@@ -14969,8 +14945,7 @@ var WebSocketConnection = /** @class */ (function () {
                 // UA Format: Firebase/<wire_protocol>/<sdk_version>/<platform>/<device>
                 var options = {
                     headers: {
-                        'User-Agent': "Firebase/" + PROTOCOL_VERSION + "/" + SDK_VERSION + "/" + process.platform + "/" + device,
-                        'X-Firebase-GMPID': this.applicationId || ''
+                        'User-Agent': "Firebase/" + PROTOCOL_VERSION + "/" + SDK_VERSION + "/" + process.platform + "/" + device
                     }
                 };
                 // Plumb appropriate http_proxy environment variable into faye-websocket if it exists.
@@ -14984,12 +14959,7 @@ var WebSocketConnection = /** @class */ (function () {
                 this.mySock = new WebSocketImpl(this.connURL, [], options);
             }
             else {
-                var options = {
-                    headers: {
-                        'X-Firebase-GMPID': this.applicationId || ''
-                    }
-                };
-                this.mySock = new WebSocketImpl(this.connURL, [], options);
+                this.mySock = new WebSocketImpl(this.connURL);
             }
         }
         catch (e) {
@@ -15369,19 +15339,17 @@ var SERVER_HELLO = 'h';
  */
 var Connection = /** @class */ (function () {
     /**
-     * @param id - an id for this connection
-     * @param repoInfo_ - the info for the endpoint to connect to
-     * @param applicationId_ - the Firebase App ID for this project
-     * @param onMessage_ - the callback to be triggered when a server-push message arrives
-     * @param onReady_ - the callback to be triggered when this connection is ready to send messages.
-     * @param onDisconnect_ - the callback to be triggered when a connection was lost
-     * @param onKill_ - the callback to be triggered when this connection has permanently shut down.
-     * @param lastSessionId - last session id in persistent connection. is used to clean up old session in real-time server
+     * @param {!string} id - an id for this connection
+     * @param {!RepoInfo} repoInfo_ - the info for the endpoint to connect to
+     * @param {function(Object)} onMessage_ - the callback to be triggered when a server-push message arrives
+     * @param {function(number, string)} onReady_ - the callback to be triggered when this connection is ready to send messages.
+     * @param {function()} onDisconnect_ - the callback to be triggered when a connection was lost
+     * @param {function(string)} onKill_ - the callback to be triggered when this connection has permanently shut down.
+     * @param {string=} lastSessionId - last session id in persistent connection. is used to clean up old session in real-time server
      */
-    function Connection(id, repoInfo_, applicationId_, onMessage_, onReady_, onDisconnect_, onKill_, lastSessionId) {
+    function Connection(id, repoInfo_, onMessage_, onReady_, onDisconnect_, onKill_, lastSessionId) {
         this.id = id;
         this.repoInfo_ = repoInfo_;
-        this.applicationId_ = applicationId_;
         this.onMessage_ = onMessage_;
         this.onReady_ = onReady_;
         this.onDisconnect_ = onDisconnect_;
@@ -15402,7 +15370,7 @@ var Connection = /** @class */ (function () {
     Connection.prototype.start_ = function () {
         var _this = this;
         var conn = this.transportManager_.initialTransport();
-        this.conn_ = new conn(this.nextTransportId_(), this.repoInfo_, this.applicationId_, undefined, this.lastSessionId);
+        this.conn_ = new conn(this.nextTransportId_(), this.repoInfo_, undefined, this.lastSessionId);
         // For certain transports (WebSockets), we need to send and receive several messages back and forth before we
         // can consider the transport healthy.
         this.primaryResponsesRequired_ = conn['responsesRequiredToBeHealthy'] || 0;
@@ -15664,7 +15632,7 @@ var Connection = /** @class */ (function () {
     };
     Connection.prototype.startUpgrade_ = function (conn) {
         var _this = this;
-        this.secondaryConn_ = new conn(this.nextTransportId_(), this.repoInfo_, this.applicationId_, this.sessionId);
+        this.secondaryConn_ = new conn(this.nextTransportId_(), this.repoInfo_, this.sessionId);
         // For certain transports (WebSockets), we need to send and receive several messages back and forth before we
         // can consider the transport healthy.
         this.secondaryResponsesRequired_ =
@@ -15917,13 +15885,11 @@ var PersistentConnection = /** @class */ (function (_super) {
     /**
      * @implements {ServerActions}
      * @param repoInfo_ Data about the namespace we are connecting to
-     * @param applicationId_ The Firebase App ID for this project
      * @param onDataUpdate_ A callback for new data from the server
      */
-    function PersistentConnection(repoInfo_, applicationId_, onDataUpdate_, onConnectStatus_, onServerInfoUpdate_, authTokenProvider_, authOverride_) {
+    function PersistentConnection(repoInfo_, onDataUpdate_, onConnectStatus_, onServerInfoUpdate_, authTokenProvider_, authOverride_) {
         var _this = _super.call(this) || this;
         _this.repoInfo_ = repoInfo_;
-        _this.applicationId_ = applicationId_;
         _this.onDataUpdate_ = onDataUpdate_;
         _this.onConnectStatus_ = onConnectStatus_;
         _this.onServerInfoUpdate_ = onServerInfoUpdate_;
@@ -16434,7 +16400,7 @@ var PersistentConnection = /** @class */ (function (_super) {
                 if (!canceled_1) {
                     log('getToken() completed. Creating connection.');
                     self_1.authToken_ = result && result.accessToken;
-                    connection_1 = new Connection(connId_1, self_1.repoInfo_, self_1.applicationId_, onDataMessage_1, onReady_1, onDisconnect_1, 
+                    connection_1 = new Connection(connId_1, self_1.repoInfo_, onDataMessage_1, onReady_1, onDisconnect_1, 
                     /* onKill= */ function (reason) {
                         warn(reason + ' (' + self_1.repoInfo_.toString() + ')');
                         self_1.interrupt(SERVER_KILL_INTERRUPT_REASON);
@@ -16866,7 +16832,7 @@ var Repo = /** @class */ (function () {
                     throw new Error('Invalid authOverride provided: ' + e);
                 }
             }
-            this.persistentConnection_ = new PersistentConnection(this.repoInfo_, app.options.appId, this.onDataUpdate_.bind(this), this.onConnectStatus_.bind(this), this.onServerInfoUpdate_.bind(this), authTokenProvider, authOverride);
+            this.persistentConnection_ = new PersistentConnection(this.repoInfo_, this.onDataUpdate_.bind(this), this.onConnectStatus_.bind(this), this.onServerInfoUpdate_.bind(this), authTokenProvider, authOverride);
             this.server_ = this.persistentConnection_;
         }
         authTokenProvider.addTokenChangeListener(function (token) {
@@ -19563,7 +19529,7 @@ var TEST_ACCESS = /*#__PURE__*/Object.freeze({
 });
 
 var name = "@firebase/database";
-var version = "0.6.6";
+var version = "0.6.3";
 
 /**
  * @license
@@ -20251,7 +20217,7 @@ Y(ch.prototype,{v:{name:"toJSON",j:[V(null,!0)]}});Y(u.prototype,{toJSON:{name:"
 Y(lm.prototype,{Ob:{name:"getSession",j:[]},dc:{name:"enroll",j:[ro(),V("displayName",!0)]},$c:{name:"unenroll",j:[X({name:"multiFactorInfo",J:"a valid multiFactorInfo",optional:!1,K:uo},V(),"multiFactorInfoIdentifier")]}});Y(ho.prototype,{clear:{name:"clear",j:[]},render:{name:"render",j:[]},verify:{name:"verify",j:[]}});Z(Gf,"parseLink",Of,[V("link")]);Z(Rn,"assertion",function(a){return new jm(a)},[qo("phone")]);
 (function(){if("undefined"!==typeof _firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a&&_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL&&_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.registerComponent){var a={ActionCodeInfo:{Operation:{EMAIL_SIGNIN:xf,PASSWORD_RESET:"PASSWORD_RESET",RECOVER_EMAIL:"RECOVER_EMAIL",REVERT_SECOND_FACTOR_ADDITION:zf,VERIFY_AND_CHANGE_EMAIL:yf,VERIFY_EMAIL:"VERIFY_EMAIL"}},Auth:un,AuthCredential:yg,Error:u};Z(a,"EmailAuthProvider",Vg,[]);Z(a,"FacebookAuthProvider",Mg,[]);Z(a,"GithubAuthProvider",Og,[]);Z(a,"GoogleAuthProvider",Qg,[]);Z(a,"TwitterAuthProvider",Sg,[]);
 Z(a,"OAuthProvider",M,[V("providerId")]);Z(a,"SAMLAuthProvider",Lg,[V("providerId")]);Z(a,"PhoneAuthProvider",hh,[oo()]);Z(a,"RecaptchaVerifier",ho,[X(V(),no(),"recaptchaContainer"),W("recaptchaParameters",!0),po()]);Z(a,"ActionCodeURL",Gf,[]);Z(a,"PhoneMultiFactorGenerator",Rn,[]);_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.registerComponent({name:"auth",instanceFactory:function(b){b=b.getProvider("app").getImmediate();return new un(b)},multipleInstances:!1,serviceProps:a,instantiationMode:"LAZY",type:"PUBLIC"});_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.registerComponent({name:"auth-internal",
-instanceFactory:function(b){b=b.getProvider("auth").getImmediate();return{getUid:r(b.getUid,b),getToken:r(b.kc,b),addAuthTokenListener:r(b.bc,b),removeAuthTokenListener:r(b.Nc,b)}},multipleInstances:!1,instantiationMode:"LAZY",type:"PRIVATE"});_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.registerVersion("@firebase/auth","0.14.7");_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.extendNamespace({User:P})}else throw Error("Cannot find the firebase namespace; be sure to include firebase-app.js before this library.");})();}).apply(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {});
+instanceFactory:function(b){b=b.getProvider("auth").getImmediate();return{getUid:r(b.getUid,b),getToken:r(b.kc,b),addAuthTokenListener:r(b.bc,b),removeAuthTokenListener:r(b.Nc,b)}},multipleInstances:!1,instantiationMode:"LAZY",type:"PRIVATE"});_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.registerVersion("@firebase/auth","0.14.6");_firebase_app__WEBPACK_IMPORTED_MODULE_0___default.a.INTERNAL.extendNamespace({User:P})}else throw Error("Cannot find the firebase namespace; be sure to include firebase-app.js before this library.");})();}).apply(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {});
 
 //# sourceMappingURL=auth.esm.js.map
 
@@ -20332,13 +20298,21 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     }
     return privateMap.get(receiver);
 };
-var _blockTags, _nonBlockTagsLimit, _cssSelectorDepth, _cssSelectorsDivider;
+var _blockTags, _nonBlockTagsLimit, _cssSelectorsDivider, _cssSelectorDepthByHostname;
 class NodeCssPath {
     constructor() {
+        var _a;
         _blockTags.set(this, /^(div|li|p|body)$/); // start with (^) + end on ($)
         _nonBlockTagsLimit.set(this, 10);
-        _cssSelectorDepth.set(this, 3);
         _cssSelectorsDivider.set(this, ' ');
+        _cssSelectorDepthByHostname.set(this, {
+            'bitbucket.org': 5,
+            default: (_a = +window.CSS_SELECTOR_DEPTH) !== null && _a !== void 0 ? _a : 3
+        });
+    }
+    get cssSelectorDepth() {
+        const depth = __classPrivateFieldGet(this, _cssSelectorDepthByHostname)[window.location.hostname];
+        return depth !== null && depth !== void 0 ? depth : __classPrivateFieldGet(this, _cssSelectorDepthByHostname).default;
     }
     // startSelectionTextNodeNumber
     // endSelectionTextNodeNumber
@@ -20348,7 +20322,7 @@ class NodeCssPath {
     getPath(node) {
         const childrenNodesPaths = this.getChildrenNodesPaths(node);
         const innerElements = childrenNodesPaths.length - 1; // minus #text
-        const cssParentSelector = this.getParentCssSelector(node, innerElements + __classPrivateFieldGet(this, _cssSelectorDepth));
+        const cssParentSelector = this.getParentCssSelector(node, innerElements + this.cssSelectorDepth);
         const cssAncestorsArray = cssParentSelector.split(__classPrivateFieldGet(this, _cssSelectorsDivider));
         const selectors = cssAncestorsArray
             .slice(0, cssAncestorsArray.length - innerElements)
@@ -20391,7 +20365,7 @@ class NodeCssPath {
             index: counter
         };
     }
-    getParentCssSelector(node, depth = __classPrivateFieldGet(this, _cssSelectorDepth), cssSelectors = []) {
+    getParentCssSelector(node, depth = this.cssSelectorDepth, cssSelectors = []) {
         const parent = this.getParentElement(node);
         const selector = this.getElementCssSelector(parent);
         cssSelectors.push(selector);
@@ -20450,7 +20424,7 @@ class NodeCssPath {
         return node.parentElement || document.body;
     }
 }
-_blockTags = new WeakMap(), _nonBlockTagsLimit = new WeakMap(), _cssSelectorDepth = new WeakMap(), _cssSelectorsDivider = new WeakMap();
+_blockTags = new WeakMap(), _nonBlockTagsLimit = new WeakMap(), _cssSelectorsDivider = new WeakMap(), _cssSelectorDepthByHostname = new WeakMap();
 
 // CONCATENATED MODULE: ./src/app/services/select-word/select-word.service.ts
 /**
@@ -20932,7 +20906,7 @@ var idb = __webpack_require__(10);
 
 
 var index_esm_name = "@firebase/installations";
-var version = "0.4.13";
+var version = "0.4.10";
 
 /**
  * @license
@@ -22790,7 +22764,7 @@ function factory(app, installations) {
 }
 
 var dist_index_esm_name = "@firebase/analytics";
-var index_esm_version = "0.3.8";
+var index_esm_version = "0.3.5";
 
 /**
  * @license
