@@ -160,7 +160,11 @@ export class Highlighter {
 		return parents.map((parent) => this.findChildrenNodesWithSelection(parent, childrenPaths));
 	}
 
+	// TODO: should be tested
 	private isId(string: string) {
+		if (string.split(' ').length > 1) {
+			return false;
+		}
 		return string.includes('#');
 	}
 

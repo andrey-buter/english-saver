@@ -11,10 +11,10 @@ export class WordsList extends Component<{words: Word[], removeItem: (wordId: st
 		}
 	}
 
-	refresh: () => void = () => this.refresh()
+	// refresh: () => void = () => this.refresh()
 
 	render() {
-		const { words, removeItem } = this.props;
+		const { words, refresh } = this.props;
 
 		return (
 			<ul className="eng-saver__words-list">
@@ -31,7 +31,7 @@ export class WordsList extends Component<{words: Word[], removeItem: (wordId: st
 						</li>
 					);
 				})}
-				{words.length ? <li><button onClick={this.refresh}>Refresh</button></li> : ''}
+				{words.length ? <li><button onClick={refresh}>Refresh</button></li> : ''}
 			</ul>
 		);
 	}

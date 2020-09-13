@@ -20249,17 +20249,14 @@ var WordsList_WordsList = __webpack_require__(16);
 
 
 class WordsList_WordsList_WordsList extends react["Component"] {
-    constructor() {
-        super(...arguments);
-        this.refresh = () => this.refresh();
-    }
     remove(id) {
         return () => {
             this.props.removeItem(id);
         };
     }
+    // refresh: () => void = () => this.refresh()
     render() {
-        const { words, removeItem } = this.props;
+        const { words, refresh } = this.props;
         return (react_default.a.createElement("ul", { className: "eng-saver__words-list" },
             words.map((word) => {
                 return (react_default.a.createElement("li", { key: word.id },
@@ -20271,7 +20268,7 @@ class WordsList_WordsList_WordsList extends react["Component"] {
                     react_default.a.createElement("div", { className: "eng-saver__words-list-css-path" }, word.startRange.cssParentSelector)));
             }),
             words.length ? react_default.a.createElement("li", null,
-                react_default.a.createElement("button", { onClick: this.refresh }, "Refresh")) : ''));
+                react_default.a.createElement("button", { onClick: refresh }, "Refresh")) : ''));
     }
 }
 
@@ -20661,7 +20658,11 @@ class Highlighter {
         }
         return parents.map((parent) => this.findChildrenNodesWithSelection(parent, childrenPaths));
     }
+    // TODO: should be tested
     isId(string) {
+        if (string.split(' ').length > 1) {
+            return false;
+        }
         return string.includes('#');
     }
     findChildrenNodesWithSelection(parentElement, originPaths) {
