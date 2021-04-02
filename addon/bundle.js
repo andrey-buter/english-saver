@@ -20436,12 +20436,19 @@ class SelectWord {
     constructor(selection, range) {
         this.selection = selection;
         this.range = range;
+        this.startOffset = 0;
+        this.endOffset = 0;
+        this.startContainer = null;
+        this.endContainer = null;
         this.translation = '';
-        const { startOffset, endOffset, startContainer, endContainer } = this.range;
-        this.startOffset = startOffset;
-        this.endOffset = endOffset;
-        this.startContainer = startContainer;
-        this.endContainer = endContainer;
+        // skip range for google translator page
+        if (this.range) {
+            const { startOffset, endOffset, startContainer, endContainer } = this.range;
+            this.startOffset = startOffset;
+            this.endOffset = endOffset;
+            this.startContainer = startContainer;
+            this.endContainer = endContainer;
+        }
     }
     addTranslation(text) {
         this.translation = text;
@@ -20451,13 +20458,31 @@ class SelectWord {
             selection: this.selection,
             originWord: this.selection,
             context: '',
-            startRange: Object.assign(Object.assign({}, nodepath.getPath(this.startContainer)), { offset: this.startOffset }),
-            endRange: Object.assign(Object.assign({}, nodepath.getPath(this.endContainer)), { offset: this.endOffset }),
+            startRange: this.getRange(this.startContainer),
+            endRange: this.getRange(this.endContainer),
             translation: this.translation,
-            uri: window.location.href
+            uri: window.location.href,
+            addedTimestamp: Date.now()
+        };
+    }
+    getRange(container) {
+        if (container) {
+            return Object.assign(Object.assign({}, nodepath.getPath(container)), { offset: this.startOffset });
+        }
+        return {
+            childrenNodesPaths: [],
+            cssParentSelector: ''
         };
     }
 }
+
+// CONCATENATED MODULE: ./src/app/helpers/log.ts
+const log = (...data) => {
+    // @ts-ignore
+    if (window['engLog']) {
+        console.log(...data);
+    }
+};
 
 // CONCATENATED MODULE: ./src/app/services/selection-handler/selection-handler.service.ts
 var selection_handler_service_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
@@ -20474,6 +20499,7 @@ var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || 
     return value;
 };
 var _selectionTimeout, _runOnSelect;
+
 
 class selection_handler_service_SelectionHandler {
     constructor() {
@@ -20495,7 +20521,7 @@ class selection_handler_service_SelectionHandler {
     handleEvent(window) {
         var _a;
         const selection = window.getSelection();
-        console.log(`[SelectionHandler.handleEvent] Selection started`, selection);
+        log(`[SelectionHandler.handleEvent] Selection started`, selection);
         if (!selection) {
             return;
         }
@@ -20505,7 +20531,7 @@ class selection_handler_service_SelectionHandler {
         const range = selection.getRangeAt(0);
         if (!((_a = range.commonAncestorContainer.classList) === null || _a === void 0 ? void 0 : _a.contains('jfk-bubble-content-id'))) {
             this.selection = new SelectWord(selection.toString(), range);
-            console.log(`[SelectionHandler.handleEvent] Selection saved: ${selection.toString()}`);
+            log(`[SelectionHandler.handleEvent] Selection saved: ${selection.toString()}`);
             return;
         }
         if (selection_handler_service_classPrivateFieldGet(this, _selectionTimeout)) {
@@ -22845,6 +22871,7 @@ var _options;
 
 
 
+
 class firebase_service_FirebaseService {
     constructor() {
         _options.set(this, {
@@ -22863,8 +22890,8 @@ class firebase_service_FirebaseService {
         return firebase_service_awaiter(this, void 0, void 0, function* () {
             // init(onAuthCallBack) {
             // this.onAuthCallBack = onAuthCallBack;
-            console.log(index_cjs["initializeApp"](firebase_service_classPrivateFieldGet(this, _options)));
-            console.log(index_cjs["analytics"]());
+            log(index_cjs["initializeApp"](firebase_service_classPrivateFieldGet(this, _options)));
+            log(index_cjs["analytics"]());
             return yield this.onAuth();
         });
     }
@@ -22879,7 +22906,7 @@ class firebase_service_FirebaseService {
                 return user.user.uid;
             }
             catch (error) {
-                console.log(error);
+                log(error);
                 return error;
             }
         });
@@ -23012,6 +23039,90 @@ const localDb = new LocalDatabaseService();
 const saver = new DataSaverService(localDb, remoteDb);
 
 
+// CONCATENATED MODULE: ./src/app/components/GoogleTranslatorActions/GoogleTranslatorActions.tsx
+
+
+const GoogleTranslatorActions = (props) => {
+    const { saveWord } = props;
+    const content = document.createTextNode("Save word");
+    const saveButton = document.createElement('button');
+    saveButton.appendChild(content);
+    saveButton.setAttribute('style', `
+		background: #fff;
+		border: 1px solid var(--gm-hairlinebutton-outline-color,#dadce0);
+		height: 34px;
+		color: #1967d2;
+		padding: 0 20px;
+		cursor: pointer;
+	`);
+    saveButton.addEventListener('click', () => {
+        const textareas = document.querySelectorAll('c-wiz textarea');
+        if (!isEnRuTranslation()) {
+            alert('Sorry, I can save only en-ru/ru-en combination');
+            return;
+        }
+        const langs = getLangs();
+        const enIndex = langs.indexOf('en');
+        const ruIndex = langs.indexOf('ru');
+        // add possibility to add new SelectWord() without range
+        // const rawWord: RawWord = {
+        // 	selection: textareas[enIndex].value,
+        // 	originWord: '',
+        // 	context: '',
+        // 	startRange: {
+        // 		childrenNodesPaths: [],
+        // 		cssParentSelector: ''
+        // 	},
+        // 	endRange: {
+        // 		childrenNodesPaths: [],
+        // 		cssParentSelector: ''
+        // 	},
+        // 	translation: textareas[ruIndex].value,
+        // 	uri: window.location.href,
+        // 	addedTimestamp: Date.now()
+        // }
+        const selectedWord = new SelectWord(textareas[enIndex].value);
+        selectedWord.addTranslation(textareas[ruIndex].value);
+        saveWord(selectedWord.getData());
+    });
+    const saveButtonDiv = document.createElement('div');
+    saveButtonDiv.classList.add('eng-saver-save-button-wrapper');
+    saveButtonDiv.appendChild(saveButton);
+    Object(react["useEffect"])(() => {
+        const interval = setInterval(() => {
+            var _a;
+            const docsButton = getDocsButton();
+            if (!docsButton) {
+                return;
+            }
+            clearInterval(interval);
+            const copyButtonDiv = docsButton.closest('div');
+            (_a = copyButtonDiv === null || copyButtonDiv === void 0 ? void 0 : copyButtonDiv.parentNode) === null || _a === void 0 ? void 0 : _a.appendChild(saveButtonDiv);
+        }, 1000);
+    }, []);
+    return react_default.a.createElement(react_default.a.Fragment, null,
+        react_default.a.createElement("div", null));
+};
+function getCopyButton() {
+    return Array.from(document.querySelectorAll('button > i.material-icons-extended'))
+        .filter((el) => { var _a; return (_a = el === null || el === void 0 ? void 0 : el.textContent) === null || _a === void 0 ? void 0 : _a.includes('content_copy'); }).shift();
+}
+function getDocsButton() {
+    return Array.from(document.querySelectorAll('c-wiz nav .material-icons-extended'))
+        .filter((el) => { var _a; return (_a = el === null || el === void 0 ? void 0 : el.textContent) === null || _a === void 0 ? void 0 : _a.includes('insert_drive_file'); }).shift();
+}
+function getLangs() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const from = urlParams.get('sl');
+    const to = urlParams.get('tl');
+    return [from, to];
+}
+function isEnRuTranslation() {
+    const langs = getLangs();
+    return langs.includes('en') && langs.includes('ru');
+}
+/* harmony default export */ var GoogleTranslatorActions_GoogleTranslatorActions = (GoogleTranslatorActions);
+
 // CONCATENATED MODULE: ./src/app/App.tsx
 var App_classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
     if (!privateMap.has(receiver)) {
@@ -23027,6 +23138,8 @@ var App_classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) |
     return value;
 };
 var _word;
+
+
 
 
 
@@ -23052,7 +23165,7 @@ class App_App extends react["Component"] {
                 this.cancel();
                 return;
             }
-            console.log(`[AppSaver] selection is saving:`, rawWord);
+            log(`[AppSaver] selection is saving:`, rawWord);
             saver.addItem(rawWord)
                 .then((word) => {
                 this.setState({
@@ -23063,7 +23176,7 @@ class App_App extends react["Component"] {
                 });
                 this.cancel();
                 highlighter.highlight(word);
-                console.log(`[AppSaver] selection saved and highlighted:`, rawWord);
+                log(`[AppSaver] selection saved and highlighted:`, rawWord);
             });
         };
         this.cancel = () => {
@@ -23090,10 +23203,12 @@ class App_App extends react["Component"] {
     }
     render() {
         const { words, toast, hideLoadedMessage } = this.state;
+        const isGoogleTranslator = this.isGoogleTranslatorPage();
         return (react_default.a.createElement(react_default.a.Fragment, null,
             react_default.a.createElement(WordsList_WordsList_WordsList, { words: words, removeItem: this.removeItem, refresh: this.refresh }),
             toast ? react_default.a.createElement(SelectionToast_SelectionToast_SelectionToast, { toast: toast, saveCloseToast: this.saveCloseToast, cancel: this.cancel }) : null,
-            !hideLoadedMessage && this.runTimer() ? react_default.a.createElement("span", { className: "eng-saver__loaded" }, "Loaded") : ''));
+            !hideLoadedMessage && this.runTimer() ? react_default.a.createElement("span", { className: "eng-saver__loaded" }, "Loaded") : '',
+            isGoogleTranslator ? react_default.a.createElement(GoogleTranslatorActions_GoogleTranslatorActions, { saveWord: this.saveGoogleTranslatorWord.bind(this) }) : ''));
     }
     runTimer() {
         setTimeout(() => {
@@ -23102,6 +23217,9 @@ class App_App extends react["Component"] {
             });
         }, 1000 * 20);
         return true;
+    }
+    isGoogleTranslatorPage() {
+        return window.location.host === 'translate.google.com';
     }
     initDb() {
         saver.init().then((data) => {
@@ -23125,6 +23243,9 @@ class App_App extends react["Component"] {
     }
     setWord(word) {
         App_classPrivateFieldSet(this, _word, word);
+    }
+    saveGoogleTranslatorWord(word) {
+        this.onSelectWord(word);
     }
 }
 _word = new WeakMap();

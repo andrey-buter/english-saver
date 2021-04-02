@@ -5,6 +5,8 @@ import { SelectionToast } from "./components/SelectionToast/SelectionToast";
 import { SelectionHandler } from "./services/selection-handler/selection-handler.service";
 import { Highlighter } from "./services/highlighter/highlighter.service";
 import { saver } from "./databases";
+import GoogleTranslatorActions from "./components/GoogleTranslatorActions/GoogleTranslatorActions";
+import { log } from "./helpers/log";
 
 // import '../styles/App.css';
 
@@ -36,12 +38,14 @@ export default class App extends Component<{}, State> {
 
 	render() {
 		const { words, toast, hideLoadedMessage } = this.state;
+		const isGoogleTranslator = this.isGoogleTranslatorPage();
 
 		return (
 			<>
 				<WordsList words={words} removeItem={this.removeItem} refresh={this.refresh}></WordsList>
 				{toast ? <SelectionToast toast={toast} saveCloseToast={this.saveCloseToast} cancel={this.cancel}></SelectionToast> : null }
 				{!hideLoadedMessage && this.runTimer() ? <span className="eng-saver__loaded">Loaded</span> : ''}
+				{isGoogleTranslator ? <GoogleTranslatorActions saveWord={this.saveGoogleTranslatorWord.bind(this)}/> : ''}
 			</>
 		);
 	}
@@ -65,7 +69,7 @@ export default class App extends Component<{}, State> {
 			return;
 		}
 
-		console.log(`[AppSaver] selection is saving:`, rawWord);
+		log(`[AppSaver] selection is saving:`, rawWord);
 
 		saver.addItem(rawWord)
 			.then((word) => {
@@ -78,7 +82,7 @@ export default class App extends Component<{}, State> {
 
 				this.cancel();
 				highlighter.highlight(word);
-				console.log(`[AppSaver] selection saved and highlighted:` , rawWord);
+				log(`[AppSaver] selection saved and highlighted:` , rawWord);
 			});
 	}
 
@@ -103,6 +107,10 @@ export default class App extends Component<{}, State> {
 		this.state.words.forEach((word) => {
 			word?.id && highlighter.highlight(word);
 		});
+	}
+
+	private isGoogleTranslatorPage() {
+		return window.location.host === 'translate.google.com';
 	}
 
 	private initDb() {
@@ -133,5 +141,9 @@ export default class App extends Component<{}, State> {
 
 	private setWord(word: RawWord | null) {
 		this.#word = word;
+	}
+
+	private saveGoogleTranslatorWord(word: RawWord) {
+		this.onSelectWord(word);
 	}
 }

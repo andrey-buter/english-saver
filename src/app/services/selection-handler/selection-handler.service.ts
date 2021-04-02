@@ -1,5 +1,6 @@
 import { SelectWord } from "../select-word/select-word.service";
 import { Word, RawWord } from "../../models/word.model";
+import { log } from "../../helpers/log";
 
 type RunOnSelect = (wordData: RawWord) => void;
 
@@ -29,7 +30,7 @@ export class SelectionHandler {
 	private handleEvent(window: Window) {
 		const selection = window.getSelection();
 
-		console.log(`[SelectionHandler.handleEvent] Selection started`, selection);
+		log(`[SelectionHandler.handleEvent] Selection started`, selection);
 
 		if (!selection) {
 			return;
@@ -43,7 +44,7 @@ export class SelectionHandler {
 
 		if (!(range.commonAncestorContainer as Element).classList?.contains('jfk-bubble-content-id')) {
 			this.selection = new SelectWord(selection.toString(), range);
-			console.log(`[SelectionHandler.handleEvent] Selection saved: ${selection.toString()}`);
+			log(`[SelectionHandler.handleEvent] Selection saved: ${selection.toString()}`);
 
 			return;
 		}

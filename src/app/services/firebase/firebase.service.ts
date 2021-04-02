@@ -4,6 +4,7 @@ import 'firebase/auth';
 import 'firebase/analytics';
 import { RawWordsDatabase } from '../../models/words-database.model';
 import { Word, RawWord } from '../../models/word.model';
+import { log } from '../../helpers/log';
 
 export class FirebaseService {
 	readonly #options = {
@@ -24,8 +25,8 @@ export class FirebaseService {
 	// init(onAuthCallBack) {
 		// this.onAuthCallBack = onAuthCallBack;
 
-		console.log(firebase.initializeApp(this.#options));
-		console.log(firebase.analytics());
+		log(firebase.initializeApp(this.#options));
+		log(firebase.analytics());
 
 		return await this.onAuth();
 	}
@@ -40,7 +41,7 @@ export class FirebaseService {
 
 			return user.user.uid;
 		} catch (error) {
-			console.log(error);
+			log(error);
 
 			return error;
 		}

@@ -8,6 +8,7 @@ export interface RawWord {
 	endRange: NodePath;
 	translation: string;
 	uri: string;
+	addedTimestamp: number;
 }
 
 export interface Word extends RawWord {
