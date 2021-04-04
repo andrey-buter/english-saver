@@ -4,3 +4,9 @@
 
 .eng-saver__toast{position:fixed;z-index:1202;bottom:10px;right:10px;background:#fff;-webkit-box-shadow:rgba(0, 0, 0, .2) 0px 1px 3px;box-shadow:rgba(0, 0, 0, .2) 0px 1px 3px;border:1px solid #bbb;padding:5px;font-size:12px;max-width:300px}
 
+.eng-saver-google-save-button{background:#fff;border:1px solid #dadce0;color:#1967d2;cursor:pointer;font-weight:bold;height:34px;padding:0 20px}
+
+div.ReactTags__tags{position:relative}div.ReactTags__tagInput{border-radius:2px;display:inline-block;width:200px}div.ReactTags__tagInput input.ReactTags__tagInputField,div.ReactTags__tagInput input.ReactTags__tagInputField:focus{border:1px solid #eee;font-size:12px;height:31px;margin:0;padding:0 4px;width:100%}div.ReactTags__selected span.ReactTags__tag{background:#eee;border:1px solid #ddd;border-radius:2px;cursor:move;display:inline-block;font-size:12px;margin:0 5px;padding:5px}div.ReactTags__selected .ReactTags__remove{border:none;color:#aaa;cursor:pointer;margin-left:5px}div.ReactTags__selected .ReactTags__remove:hover{color:#000}div.ReactTags__suggestions{position:absolute;z-index:1000}div.ReactTags__suggestions ul{background:white;-webkit-box-shadow:0.05em 0.01em 0.5em rgba(0, 0, 0, .2);box-shadow:0.05em 0.01em 0.5em rgba(0, 0, 0, .2);font-size:12px;list-style-type:none;min-width:200px;white-space:nowrap}div.ReactTags__suggestions li{border-bottom:1px solid #ddd;margin:0;padding:5px 10px}div.ReactTags__suggestions li mark{background:none;font-weight:600;text-decoration:underline}div.ReactTags__suggestions ul li.ReactTags__activeSuggestion{background:#b7cfe0;cursor:pointer}
+
+.eng-saver-google-page-actions{display:-webkit-box;display:-ms-flexbox;display:flex;gap:8px;gap:0.5rem}
+

@@ -1,26 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
+import { Tag } from '../../models/tag.model';
 import { RawWord } from '../../models/word.model';
 import { SelectWord } from '../../services/select-word/select-word.service';
+import PageActions from './PageActions/PageActions';
 
 interface Props {
-	saveWord: (word: RawWord) => void
+	tags: Tag[],
+	selectedTagIds: string[];
+	saveTagsAndWord: (tags: Tag[], word: SelectWord) => void;
 }
 
-const GoogleTranslatorActions = (props: Props) => {
-	const { saveWord } = props;
-	const content = document.createTextNode("Save word");
-	const saveButton = document.createElement('button');
-	saveButton.appendChild(content);
-	saveButton.setAttribute('style', `
-		background: #fff;
-		border: 1px solid var(--gm-hairlinebutton-outline-color,#dadce0);
-		height: 34px;
-		color: #1967d2;
-		padding: 0 20px;
-		cursor: pointer;
-	`);
+const GoogleTranslatorIntegration = (props: Props) => {
+	const { saveTagsAndWord, tags: allTags, selectedTagIds } = props;
 
-	saveButton.addEventListener('click', () => {
+	const saveButtonDiv = document.createElement('div');
+
+	const onClickSaveWord = (tags: Tag[]) => {
 		const textareas = document.querySelectorAll<HTMLTextAreaElement>('c-wiz textarea');
 
 		if (!isEnRuTranslation()) {
@@ -33,33 +29,11 @@ const GoogleTranslatorActions = (props: Props) => {
 		const enIndex = langs.indexOf('en');
 		const ruIndex = langs.indexOf('ru');
 
-		// add possibility to add new SelectWord() without range
-		// const rawWord: RawWord = {
-		// 	selection: textareas[enIndex].value,
-		// 	originWord: '',
-		// 	context: '',
-		// 	startRange: {
-		// 		childrenNodesPaths: [],
-		// 		cssParentSelector: ''
-		// 	},
-		// 	endRange: {
-		// 		childrenNodesPaths: [],
-		// 		cssParentSelector: ''
-		// 	},
-		// 	translation: textareas[ruIndex].value,
-		// 	uri: window.location.href,
-		// 	addedTimestamp: Date.now()
-		// }
-
 		const selectedWord = new SelectWord(textareas[enIndex].value);
 		selectedWord.addTranslation(textareas[ruIndex].value);
 
-		saveWord(selectedWord.getData());
-	});
-
-	const saveButtonDiv = document.createElement('div');
-	saveButtonDiv.classList.add('eng-saver-save-button-wrapper');
-	saveButtonDiv.appendChild(saveButton);
+		saveTagsAndWord(tags, selectedWord);
+	}
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -73,6 +47,14 @@ const GoogleTranslatorActions = (props: Props) => {
 
 			const copyButtonDiv = docsButton.closest('div');
 			copyButtonDiv?.parentNode?.appendChild(saveButtonDiv);
+
+			const selectedTags = allTags.filter((tag) => selectedTagIds.includes(tag.id));
+
+			ReactDOM.render(<PageActions
+				selectedTags={selectedTags}
+				suggestionTags={allTags}
+				saveWord={onClickSaveWord}
+			/>, saveButtonDiv);
 		}, 1000);
 	}, []);
 
@@ -105,4 +87,4 @@ function isEnRuTranslation() {
 	return langs.includes('en') && langs.includes('ru');
 }
 
-export default GoogleTranslatorActions;
+export default GoogleTranslatorIntegration;

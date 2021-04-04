@@ -5,8 +5,13 @@ import 'firebase/analytics';
 import { RawWordsDatabase } from '../../models/words-database.model';
 import { Word, RawWord } from '../../models/word.model';
 import { log } from '../../helpers/log';
+import { RawDatabase } from '../../models/database.model';
+import { RawTagsDatabase } from '../../models/tags-database.model';
 
 export class FirebaseService {
+	readonly wordsTable = 'words';
+	readonly tagsTable = 'tags';
+
 	readonly #options = {
 		apiKey: "AIzaSyCQ_4yQHE9RQsrtreYRNazDVEeXbTjplzg",
 		authDomain: "english-words-367a1.firebaseapp.com",
@@ -21,7 +26,11 @@ export class FirebaseService {
 	user: firebase.User | undefined | null;
 	// onAuthCallBack;
 
-	async init() {
+	private isGoogleTranslatorPage() {
+		return window.location.host === 'translate.google.com';
+	}
+
+	async init(): Promise<RawDatabase> {
 	// init(onAuthCallBack) {
 		// this.onAuthCallBack = onAuthCallBack;
 
@@ -61,7 +70,7 @@ export class FirebaseService {
 		}
 	}
 
-	private onAuth(): Promise<RawWordsDatabase> {
+	private onAuth(): Promise<RawDatabase> {
 		return new Promise((resolve, reject) => {
 			firebase.auth().onAuthStateChanged(async (user) => {
 				if (!user) {
@@ -71,11 +80,17 @@ export class FirebaseService {
 
 				this.user = user;
 
-				const data = await this.loadAll();
+				const words = await this.loadWords();
+				let tags = {} as RawTagsDatabase;
 
-				// debugger
+				if (this.isGoogleTranslatorPage()) {
+					tags = await this.loadTags();
+				}
 
-				resolve(data);
+				resolve({
+					words,
+					tags
+				});
 
 				// await this.load(); // https://youtu.be/DlXSA3_lSX4?t=3478
 			})
@@ -94,12 +109,59 @@ export class FirebaseService {
 		}
 	}
 
+	async addTag(tag: string): Promise<any> {
+		if (!this.user?.uid) {
+			throw new Error('[FirebaseService.addItem] user.uid is undefined');
+		}
+		try {
+			const response = await firebase.database().ref(this.tagsTable).push({
+				userId: this.user.uid,
+				text: tag
+			});
+
+			if (!response.key) {
+				throw new Error('[FirebaseService.addItem] response.key is undefined');
+			}
+
+			return response.key;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	private async loadTags(): Promise<RawTagsDatabase> {
+		try {
+			// let data = await firebase.database().ref(this.tagsTable).once('value');
+			// data = data.val();
+
+			return new Promise(async (resolve) => {
+				await firebase.database()
+					.ref(this.tagsTable)
+					.once('value', function (dataSnapshot) {
+						resolve(dataSnapshot.val() || {});
+					});
+			});
+
+			// let data2 = await firebase.database()
+			// 	.ref(this.tagsTable)
+			// 	.orderByChild('uri')
+			// 	.equalTo(window.location.href)
+			// 	.once('value', function (dataSnapshot) {
+			// 		dataSnapshot.val()
+			// 	});
+			// debugger
+			// return data.val()
+		} catch (error) {
+			throw error;
+		}
+	}
+
 	async addItem(item: RawWord): Promise<string> {
 		if (!this.user?.uid) {
 			throw new Error('[FirebaseService.addItem] user.uid is undefined');
 		}
 		try {
-			const response = await firebase.database().ref('words').push({
+			const response = await firebase.database().ref(this.wordsTable).push({
 				userId: this.user.uid,
 				...item
 			});
@@ -119,7 +181,7 @@ export class FirebaseService {
 			throw new Error('[FirebaseService] user.uid is undefined');
 		}
 		try {
-			await firebase.database().ref('words').child(id).update({
+			await firebase.database().ref(this.wordsTable).child(id).update({
 				userId: this.user.uid,
 				...item
 			});
@@ -131,7 +193,7 @@ export class FirebaseService {
 
 	async removeItem(id: string) {
 		try {
-			await firebase.database().ref('words').child(id).remove();
+			await firebase.database().ref(this.wordsTable).child(id).remove();
 
 			return true;
 		} catch (error) {
@@ -139,14 +201,14 @@ export class FirebaseService {
 		}
 	}
 
-	private async loadAll(): Promise<RawWordsDatabase> {
+	private async loadWords(): Promise<RawWordsDatabase> {
 		try {
-			let data = await firebase.database().ref('words').once('value');
-			data = data.val();
+			// let data = await firebase.database().ref(this.wordsTable).once('value');
+			// data = data.val();
 
 			return new Promise(async (resolve) => {
 				await firebase.database()
-					.ref('words')
+					.ref(this.wordsTable)
 					.orderByChild('uri')
 					.equalTo(window.location.href)
 					.once('value', function (dataSnapshot) {
@@ -155,7 +217,7 @@ export class FirebaseService {
 			});
 
 			// let data2 = await firebase.database()
-			// 	.ref('words')
+			// 	.ref(this.wordsTable)
 			// 	.orderByChild('uri')
 			// 	.equalTo(window.location.href)
 			// 	.once('value', function (dataSnapshot) {

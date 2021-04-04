@@ -9,6 +9,7 @@ export interface RawWord {
 	translation: string;
 	uri: string;
 	addedTimestamp: number;
+	tagIds: string[];
 }
 
 export interface Word extends RawWord {

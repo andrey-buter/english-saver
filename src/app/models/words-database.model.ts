@@ -1,3 +1,5 @@
+
+
 import { Word, RawWord } from "./word.model";
 
 export type WordsDatabase = Record<string, Word>;

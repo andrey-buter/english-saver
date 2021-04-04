@@ -5,8 +5,10 @@ import { SelectionToast } from "./components/SelectionToast/SelectionToast";
 import { SelectionHandler } from "./services/selection-handler/selection-handler.service";
 import { Highlighter } from "./services/highlighter/highlighter.service";
 import { saver } from "./databases";
-import GoogleTranslatorActions from "./components/GoogleTranslatorActions/GoogleTranslatorActions";
+import GoogleTranslatorIntegration from "./components/GoogleTranslatorIntegration/GoogleTranslatorIntegration";
 import { log } from "./helpers/log";
+import { Tag } from "./models/tag.model";
+import { SelectWord } from "./services/select-word/select-word.service";
 
 // import '../styles/App.css';
 
@@ -16,15 +18,19 @@ const highlighter = new Highlighter()
 
 interface State {
 	words: Word[];
+	tags: Tag[],
 	toast: string | null;
-	hideLoadedMessage: boolean
+	hideLoadedMessage: boolean;
+	isLoadedData: boolean;
 }
 
 export default class App extends Component<{}, State> {
 	state: State = {
 		words: [],
+		tags: [],
 		toast: null,
-		hideLoadedMessage: false
+		hideLoadedMessage: false,
+		isLoadedData: false
 	};
 
 	#word: RawWord | null = null;
@@ -37,7 +43,7 @@ export default class App extends Component<{}, State> {
 	}
 
 	render() {
-		const { words, toast, hideLoadedMessage } = this.state;
+		const { words, tags, toast, hideLoadedMessage, isLoadedData } = this.state;
 		const isGoogleTranslator = this.isGoogleTranslatorPage();
 
 		return (
@@ -45,7 +51,11 @@ export default class App extends Component<{}, State> {
 				<WordsList words={words} removeItem={this.removeItem} refresh={this.refresh}></WordsList>
 				{toast ? <SelectionToast toast={toast} saveCloseToast={this.saveCloseToast} cancel={this.cancel}></SelectionToast> : null }
 				{!hideLoadedMessage && this.runTimer() ? <span className="eng-saver__loaded">Loaded</span> : ''}
-				{isGoogleTranslator ? <GoogleTranslatorActions saveWord={this.saveGoogleTranslatorWord.bind(this)}/> : ''}
+				{isGoogleTranslator && isLoadedData ? <GoogleTranslatorIntegration
+					selectedTagIds={words[0]?.tagIds || []}
+					tags={tags}
+					saveTagsAndWord={this.saveTagsAndWord.bind(this)}
+				/> : ''}
 			</>
 		);
 	}
@@ -114,12 +124,14 @@ export default class App extends Component<{}, State> {
 	}
 
 	private initDb() {
-		saver.init().then((data) => {
+		saver.init().then(({words, tags}) => {
 			this.setState({
-				words: data
+				words,
+				tags,
+				isLoadedData: true,
 			});
 
-			data.forEach((word) => {
+			words.forEach((word) => {
 				word?.id && highlighter.highlight(word);
 			})
 		});
@@ -143,7 +155,26 @@ export default class App extends Component<{}, State> {
 		this.#word = word;
 	}
 
-	private saveGoogleTranslatorWord(word: RawWord) {
-		this.onSelectWord(word);
+	private async saveTags(tags: Tag[]): Promise<string[]> {
+		const allTagIds = this.state.tags.map((tag) => tag.id);
+		const tagIds = tags.map((tag) => tag.id);
+		const newTagIds = tagIds.filter((tagId) => !allTagIds.includes(tagId));
+
+		if (!newTagIds.length) {
+			return Promise.resolve(tagIds);
+		}
+
+		return await saver.addTags(newTagIds);
+	}
+
+	private saveTagsAndWord(tags: Tag[], word: SelectWord) {
+		this.saveTags(tags)
+			.then((ids) => {
+				word.addTagIds(ids);
+				return word.getData();
+			})
+			.then((wordData) => {
+				this.onSelectWord(wordData);
+			});
 	}
 }

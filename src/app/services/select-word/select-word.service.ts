@@ -7,6 +7,7 @@
 import { NodeCssPath } from "../node-css-path/node-css-path.service";
 import { RawWord } from "../../models/word.model";
 import { NodePath } from "../../models/node-path.model";
+import { Tag } from "../../models/tag.model";
 
 const nodepath = new NodeCssPath();
 
@@ -16,6 +17,7 @@ export class SelectWord {
 	startContainer: Node | null = null;
 	endContainer: Node | null = null;
 	translation: string = '';
+	tagIds: string[] = [];
 
 	// TODO: format selection
 	constructor(private selection: string, private range?: Range) {
@@ -34,6 +36,10 @@ export class SelectWord {
 		this.translation = text;
 	}
 
+	addTagIds(tagIds: string[]) {
+		this.tagIds = tagIds;
+	}
+
 	getData(): RawWord {
 		return {
 			selection: this.selection,
@@ -43,6 +49,7 @@ export class SelectWord {
 			endRange: this.getRange(this.endContainer),
 			translation: this.translation,
 			uri: window.location.href,
+			tagIds: this.tagIds,
 			addedTimestamp: Date.now()
 		}
 	}
